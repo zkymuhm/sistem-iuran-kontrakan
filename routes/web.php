@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\BerandaController;
 use App\Http\Controllers\TransaksiController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\KontrakanController;
@@ -30,7 +31,7 @@ Route::middleware('auth')->group(function () {
 
     // Wilayah 3 — sudah tergabung kontrakan
     Route::middleware('kontrakan')->group(function () {
-        Route::view('/beranda', 'beranda')->name('beranda');
+        Route::get('/beranda', BerandaController::class)->name('beranda');
 
         Route::get('/transaksi', [TransaksiController::class, 'index'])->name('transaksi.index');
         Route::get('/transaksi/catat', [TransaksiController::class, 'create'])->name('transaksi.create');
