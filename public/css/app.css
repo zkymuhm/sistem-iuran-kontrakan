@@ -78,3 +78,30 @@ a.kartu { color: var(--teks); text-decoration: none; }
 
 .kode { font-size: 28px; font-weight: 700; letter-spacing: 4px; font-variant-numeric: tabular-nums; }
 .isian-kode input { text-transform: uppercase; letter-spacing: 4px; }
+
+.baris { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+
+.chip { display: inline-block; padding: 4px 12px; border-radius: 999px; font-size: 12px; font-weight: 600; white-space: nowrap; }
+.chip-belum               { background: var(--belum-bg);  color: var(--teks-2); }
+.chip-menunggu_konfirmasi { background: var(--tunggu-bg); color: var(--tunggu); }
+.chip-lunas               { background: var(--lunas-bg);  color: var(--lunas); }
+
+.isian select {
+  height: 48px; padding: 0 16px;
+  border: 1px solid var(--garis); border-radius: 12px;
+  background: var(--permukaan); color: var(--teks); font: inherit;
+}
+
+.label-bagian { font-size: 12px; color: var(--teks-2); }
+.pilihan-penghuni {
+  display: flex; flex-direction: column;
+  background: var(--permukaan); border: 1px solid var(--garis); border-radius: 12px;
+}
+.pilihan-penghuni label { display: flex; align-items: center; gap: 12px; min-height: 48px; padding: 0 16px; }
+.pilihan-penghuni label + label { border-top: 1px solid var(--garis); }
+.pilihan-penghuni input { width: 20px; height: 20px; accent-color: var(--utama); }
+.pilihan-salah { border-color: var(--risiko); }
+
+.daftar-baris { display: flex; flex-direction: column; }
+.daftar-baris .baris { min-height: 56px; }
+.daftar-baris .baris + .baris { border-top: 1px solid var(--garis); }

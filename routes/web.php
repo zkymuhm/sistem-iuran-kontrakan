@@ -1,8 +1,10 @@
 <?php
 
+use App\Http\Controllers\TransaksiController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\KontrakanController;
 use Illuminate\Support\Facades\Route;
+
 
 // Wilayah 1 — belum masuk
 Route::middleware('guest')->group(function () {
@@ -29,5 +31,10 @@ Route::middleware('auth')->group(function () {
     // Wilayah 3 — sudah tergabung kontrakan
     Route::middleware('kontrakan')->group(function () {
         Route::view('/beranda', 'beranda')->name('beranda');
+
+        Route::get('/transaksi', [TransaksiController::class, 'index'])->name('transaksi.index');
+        Route::get('/transaksi/catat', [TransaksiController::class, 'create'])->name('transaksi.create');
+        Route::post('/transaksi', [TransaksiController::class, 'store'])->name('transaksi.store');
+        Route::get('/transaksi/{transaksi}', [TransaksiController::class, 'show'])->name('transaksi.show');
     });
 });

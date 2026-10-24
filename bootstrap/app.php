@@ -16,6 +16,13 @@ return Application::configure(basePath: dirname(__DIR__))
             'kontrakan'       => \App\Http\Middleware\PastikanKontrakanAktif::class,
             'tanpa.kontrakan' => \App\Http\Middleware\PastikanTanpaKontrakan::class,
         ]);
+
+        // Kontrakan harus ditetapkan sebelum route model binding mencari data,
+        // agar global scope NFR-08 sudah aktif saat {transaksi} di-resolve.
+        $middleware->prependToPriorityList(
+            before: \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            prepend: \App\Http\Middleware\PastikanKontrakanAktif::class,
+        );
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(
