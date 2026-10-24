@@ -58,4 +58,23 @@ body {
 .pesan-berhasil { background: var(--lunas-bg); color: var(--lunas); }
 
 .tautan-bawah { text-align: center; color: var(--teks-2); }
-.tautan-bawah a { color: var(--teks); font-weight: 600; }
+.tautan-bawah a { color: var(--teks); font-weight: 600; } 
+
+.tumpukan { display: flex; flex-direction: column; gap: 32px; }
+
+.kepala { display: flex; align-items: center; gap: 8px; min-height: 48px; margin-bottom: 32px; }
+.kembali {
+  display: flex; align-items: center; justify-content: center;
+  width: 48px; height: 48px; margin-left: -12px;
+  color: var(--teks); text-decoration: none; font-size: 24px;
+}
+
+.kartu {
+  display: flex; flex-direction: column; gap: 8px; padding: 16px;
+  background: var(--permukaan); border: 1px solid var(--garis); border-radius: 16px;
+}
+a.kartu { color: var(--teks); text-decoration: none; }
+.kartu-judul { font-size: 16px; font-weight: 600; }
+
+.kode { font-size: 28px; font-weight: 700; letter-spacing: 4px; font-variant-numeric: tabular-nums; }
+.isian-kode input { text-transform: uppercase; letter-spacing: 4px; }

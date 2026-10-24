@@ -35,7 +35,7 @@ class AuthController extends Controller
         // ID sesi diganti setelah masuk untuk mencegah session fixation.
         $request->session()->regenerate();
 
-        return redirect()->intended(route('pilihan'));
+        return redirect()->intended(route('beranda'));
     }
 
     public function formDaftar()
