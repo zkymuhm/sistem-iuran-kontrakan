@@ -1,45 +1,61 @@
 @extends('layouts.app')
 
-@section('judul', 'Catat Transaksi')
-
-@section('isi')
 @php
-$terpilih = old('penanggung', $penghuni->pluck('id_anggota')->all());
-$penalang = (int) old('id_penalang', $anggotaAktif->id_anggota);
+$modeUbah = $transaksi !== null;
 $hariIni = now()->toDateString();
+
+$terpilih = old('penanggung', $modeUbah
+? $transaksi->detail->pluck('id_anggota')->all()
+: $penghuni->pluck('id_anggota')->all());
+
+$penalang = (int) old('id_penalang', $modeUbah ? $transaksi->id_penalang : $anggotaAktif->id_anggota);
 @endphp
 
+@section('judul', $modeUbah ? 'Ubah Transaksi' : 'Catat Transaksi')
+
+@section('isi')
 <header class="kepala">
-    <a href="{{ route('beranda') }}" class="kembali" aria-label="Kembali">←</a>
-    <h1 class="judul-halaman">Catat Transaksi</h1>
+    <a href="{{ $modeUbah ? route('transaksi.show', $transaksi) : route('beranda') }}" class="kembali" aria-label="Kembali">←</a>
+    <h1 class="judul-halaman">{{ $modeUbah ? 'Ubah Transaksi' : 'Catat Transaksi' }}</h1>
 </header>
 
-<form method="POST" action="{{ route('transaksi.store') }}" class="form" id="form-transaksi" novalidate>
+<form method="POST"
+    action="{{ $modeUbah ? route('transaksi.update', $transaksi) : route('transaksi.store') }}"
+    class="form" id="form-transaksi" novalidate>
     @csrf
+    @if ($modeUbah) @method('PUT') @endif
+
+    @if ($terkunci)
+    <div class="kartu teks-sekunder">
+        Sudah ada pembayaran pada transaksi ini. Hanya nama barang dan tanggal yang dapat diubah. Koreksi nominal dilakukan dengan mencatat transaksi baru.
+    </div>
+    @endif
 
     <div class="isian @error('nama_barang') isian-salah @enderror">
         <label for="nama_barang">Nama Barang</label>
-        <input id="nama_barang" type="text" name="nama_barang" value="{{ old('nama_barang') }}">
+        <input id="nama_barang" type="text" name="nama_barang" value="{{ old('nama_barang', $transaksi?->nama_barang) }}">
         @error('nama_barang') <p class="pesan-isian">{{ $message }}</p> @enderror
     </div>
 
     <div class="isian @error('nominal') isian-salah @enderror">
         <label for="nominal">Nominal (Rp)</label>
-        <input id="nominal" type="text" inputmode="numeric" name="nominal" value="{{ old('nominal') }}" class="nominal">
+        <input id="nominal" type="text" inputmode="numeric" name="nominal" class="nominal"
+            value="{{ old('nominal', $transaksi?->nominal) }}" @disabled($terkunci)>
         @error('nominal') <p class="pesan-isian">{{ $message }}</p> @enderror
     </div>
 
     <div class="isian @error('tanggal') isian-salah @enderror">
         <label for="tanggal">Tanggal</label>
-        <input id="tanggal" type="date" name="tanggal" value="{{ old('tanggal', $hariIni) }}" max="{{ $hariIni }}">
+        <input id="tanggal" type="date" name="tanggal" max="{{ $hariIni }}"
+            value="{{ old('tanggal', $transaksi?->tanggal?->toDateString() ?? $hariIni) }}">
         @error('tanggal') <p class="pesan-isian">{{ $message }}</p> @enderror
     </div>
 
     <div class="isian @error('id_penalang') isian-salah @enderror">
         <label for="id_penalang">Penalang</label>
-        <select id="id_penalang" name="id_penalang">
+        <select id="id_penalang" name="id_penalang" @disabled($terkunci)>
             @foreach ($penghuni as $p)
-            <option value="{{ $p->id_anggota }}" @selected($p->id_anggota === $penalang)>{{ $p->pengguna->nama }}</option>
+            <option value="{{ $p->id_anggota }}" @selected((int) $p->id_anggota === $penalang)>{{ $p->pengguna->nama }}</option>
             @endforeach
         </select>
         @error('id_penalang') <p class="pesan-isian">{{ $message }}</p> @enderror
@@ -52,7 +68,7 @@ $hariIni = now()->toDateString();
             @foreach ($penghuni as $p)
             <label>
                 <input type="checkbox" name="penanggung[]" value="{{ $p->id_anggota }}"
-                    @checked(in_array($p->id_anggota, $terpilih))>
+                    @checked(in_array($p->id_anggota, $terpilih)) @disabled($terkunci)>
                 {{ $p->pengguna->nama }}
             </label>
             @endforeach
@@ -60,16 +76,19 @@ $hariIni = now()->toDateString();
         @if ($galatPenanggung) <p class="pesan-isian">{{ $galatPenanggung }}</p> @endif
     </div>
 
+    @unless ($terkunci)
     {{-- Kartu rincian pembagian (Modul 6). Perkiraan dihitung di peramban; penyimpanan tetap dihitung ulang oleh server. --}}
     <div class="kartu">
         <span class="kartu-judul">Rincian Pembagian</span>
         <span class="teks-sekunder" id="rincian"></span>
     </div>
+    @endunless
 
     <button type="submit" class="tombol tombol-utama">Simpan</button>
-    <a href="{{ route('beranda') }}" class="tombol tombol-sekunder">Batal</a>
+    <a href="{{ $modeUbah ? route('transaksi.show', $transaksi) : route('beranda') }}" class="tombol tombol-sekunder">Batal</a>
 </form>
 
+@unless ($terkunci)
 <script>
     (function() {
         const form = document.getElementById('form-transaksi');
@@ -104,4 +123,5 @@ $hariIni = now()->toDateString();
         perbarui();
     })();
 </script>
+@endunless
 @endsection

@@ -105,3 +105,9 @@ a.kartu { color: var(--teks); text-decoration: none; }
 .daftar-baris { display: flex; flex-direction: column; }
 .daftar-baris .baris { min-height: 56px; }
 .daftar-baris .baris + .baris { border-top: 1px solid var(--garis); }
+
+.tombol-risiko { background: var(--permukaan); color: var(--risiko); border: 1px solid var(--risiko); }
+.pesan-gagal { background: var(--permukaan); color: var(--risiko); border: 1px solid var(--risiko); }
+.baris-tombol { display: flex; gap: 8px; }
+.baris-tombol > * { flex: 1; }
+input:disabled, select:disabled { background: var(--latar); color: var(--teks-2); }

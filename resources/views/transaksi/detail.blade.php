@@ -14,6 +14,10 @@ $belumDiterima = $transaksi->detail->where('status_bayar', '!=', 'lunas')->sum('
     <h1 class="judul-halaman">Detail Transaksi</h1>
 </header>
 
+@error('transaksi')
+<div class="pesan pesan-gagal">{{ $message }}</div>
+@enderror
+
 <div class="tumpukan">
     <div class="kartu">
         <span class="judul-halaman">{{ $transaksi->nama_barang }}</span>
@@ -42,5 +46,27 @@ $belumDiterima = $transaksi->detail->where('status_bayar', '!=', 'lunas')->sum('
             @endforeach
         </div>
     </div>
+
+    @if ($bolehKelola)
+    <div class="form">
+        @if ($terkunci)
+        <p class="teks-sekunder">Sudah ada pembayaran, sehingga nominal dan penanggung terkunci dan transaksi tidak dapat dihapus.</p>
+        @endif
+
+        <div class="baris-tombol">
+            <a href="{{ route('transaksi.edit', $transaksi) }}" class="tombol tombol-sekunder">Ubah</a>
+
+            @unless ($terkunci)
+            <form method="POST" action="{{ route('transaksi.destroy', $transaksi) }}"
+                data-konfirmasi="Hapus transaksi {{ $transaksi->nama_barang }}? Pembagian biayanya ikut terhapus."
+                onsubmit="return confirm(this.dataset.konfirmasi)">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="tombol tombol-risiko">Hapus</button>
+            </form>
+            @endunless
+        </div>
+    </div>
+    @endif
 </div>
 @endsection
