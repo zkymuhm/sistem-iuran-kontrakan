@@ -177,3 +177,24 @@ input:disabled, select:disabled { background: var(--latar); color: var(--teks-2)
 
 .kemajuan { height: 8px; border-radius: 999px; background: var(--belum-bg); overflow: hidden; }
 .kemajuan-isi { height: 100%; background: var(--lunas); }
+
+/* Modul 8 — Rekap (laporan) */
+.laporan { display: flex; flex-direction: column; gap: 24px; }
+.laporan-kepala { display: flex; flex-direction: column; gap: 4px; }
+.tabel-gulir { overflow-x: auto; background: var(--permukaan); border: 1px solid var(--garis); border-radius: 12px; }
+.tabel { width: 100%; border-collapse: collapse; font-size: 13px; }
+.tabel th, .tabel td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--garis); white-space: nowrap; }
+.tabel th { font-size: 12px; font-weight: 600; color: var(--teks-2); }
+.tabel tfoot td { font-weight: 700; border-bottom: none; }
+.tabel .angka { text-align: right; }
+.hanya-dicetak { display: none; }
+
+@media print {
+  body { background: #FFFFFF; }
+  .navigasi-bawah, .kepala, .tidak-dicetak, .pesan { display: none !important; }
+  .hanya-dicetak { display: block; }
+  .halaman, .halaman.ada-navigasi { max-width: none; padding: 0; }
+  .tabel-gulir { overflow: visible; border-color: #999; }
+  .tabel th, .tabel td { white-space: normal; }
+  .kartu { break-inside: avoid; }
+}

@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\KontrakanController;
 use App\Http\Controllers\PembayaranController;
 use App\Http\Controllers\SaldoController;
+use App\Http\Controllers\RekapController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -35,6 +36,8 @@ Route::middleware('auth')->group(function () {
     Route::middleware('kontrakan')->group(function () {
         Route::get('/beranda', BerandaController::class)->name('beranda');
         Route::get('/saldo', SaldoController::class)->name('saldo');
+        Route::get('/rekap', [RekapController::class, 'index'])->name('rekap');
+        Route::get('/rekap/unduh', [RekapController::class, 'csv'])->name('rekap.csv');
 
         Route::get('/transaksi', [TransaksiController::class, 'index'])->name('transaksi.index');
         Route::get('/transaksi/catat', [TransaksiController::class, 'create'])->name('transaksi.create');
