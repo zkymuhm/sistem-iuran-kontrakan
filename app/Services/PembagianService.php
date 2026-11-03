@@ -48,6 +48,7 @@ class PembagianService
                 'nama_barang' => $data['nama_barang'],
                 'nominal'     => $data['nominal'],
                 'tanggal'     => $data['tanggal'],
+                'foto_bukti'  => $data['foto_bukti'] ?? null,
             ]);
 
             $this->simpanPembagian($transaksi, $data);
@@ -67,6 +68,8 @@ class PembagianService
                 'nama_barang' => $data['nama_barang'],
                 'nominal'     => $data['nominal'],
                 'tanggal'     => $data['tanggal'],
+                // array_key_exists, bukan ??, agar nilai null (foto dihapus) tetap tersimpan.
+                'foto_bukti'  => array_key_exists('foto_bukti', $data) ? $data['foto_bukti'] : $transaksi->foto_bukti,
             ]);
 
             // Aman dihapus: BR-19 menjamin belum ada pembayaran pada baris lama.

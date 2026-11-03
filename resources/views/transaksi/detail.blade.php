@@ -26,6 +26,12 @@ $rp = fn ($n) => 'Rp ' . number_format((int) $n, 0, ',', '.');
         <span class="teks-sekunder">{{ $transaksi->tanggal->translatedFormat('j F Y') }}</span>
         <span class="teks-sekunder">Penalang: {{ $namaPenalang }}</span>
         <span class="teks-sekunder">Dicatat oleh: {{ $transaksi->pencatat->pengguna->nama }}</span>
+        @if ($transaksi->foto_bukti)
+        {{-- FR-14: dibuka melalui route terlindung, bukan alamat berkas publik --}}
+        <a href="{{ route('transaksi.bukti', $transaksi) }}" target="_blank" rel="noopener">
+            <img src="{{ route('transaksi.bukti', $transaksi) }}" alt="Foto bukti pembelian {{ $transaksi->nama_barang }}" class="foto-bukti" loading="lazy">
+        </a>
+        @endif
     </div>
 
     <div class="kartu">

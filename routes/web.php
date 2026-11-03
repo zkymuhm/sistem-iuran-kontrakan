@@ -67,5 +67,6 @@ Route::middleware('auth')->group(function () {
 
         // Diletakkan setelah /transaksi/catat agar kata "catat" tidak dianggap ID transaksi
         Route::get('/transaksi/{transaksi}', [TransaksiController::class, 'show'])->whereNumber('transaksi')->name('transaksi.show');
+        Route::get('/transaksi/{transaksi}/bukti', [TransaksiController::class, 'bukti'])->whereNumber('transaksi')->name('transaksi.bukti');
     });
 });

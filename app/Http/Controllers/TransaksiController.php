@@ -6,6 +6,7 @@ use App\Models\Anggota;
 use App\Models\Transaksi;
 use App\Services\PembagianService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
@@ -61,8 +62,17 @@ class TransaksiController extends Controller
     public function store(Request $request)
     {
         $data = $this->validasi($request);
+        [$foto] = $this->ambilFoto($data);
 
-        $transaksi = $this->pembagian->catat($data, app('anggota.aktif'));
+        // FR-14: foto disimpan lebih dahulu; bila penyimpanan data gagal, foto dihapus agar tidak tertinggal.
+        $data['foto_bukti'] = $foto ? $this->simpanFoto($foto) : null;
+
+        try {
+            $transaksi = $this->pembagian->catat($data, app('anggota.aktif'));
+        } catch (\Throwable $e) {
+            $this->hapusFoto($data['foto_bukti']);
+            throw $e;
+        }
 
         return redirect()->route('transaksi.show', $transaksi)
             ->with('berhasil', 'Transaksi berhasil disimpan. ' . $this->pesanPembagian($data['nominal'], count($data['penanggung'])));
@@ -98,17 +108,37 @@ class TransaksiController extends Controller
     {
         $this->pastikanBolehDikelola($transaksi);
 
-        // BR-19: setelah ada pembayaran, hanya keterangan yang dapat diperbaiki.
-        if ($transaksi->sudahAdaPembayaran()) {
-            $data = $request->validate($this->aturanKeterangan(), $this->pesanValidasi());
-            $transaksi->update($data);
+        $terkunci = $transaksi->sudahAdaPembayaran();
 
-            return redirect()->route('transaksi.show', $transaksi)
-                ->with('berhasil', 'Nama barang dan tanggal berhasil diubah. Nominal, penalang, dan penanggung tidak diubah karena sudah ada pembayaran.');
+        // BR-19: setelah ada pembayaran, hanya keterangan (nama barang, tanggal, foto bukti) yang dapat diperbaiki.
+        $data = $terkunci
+            ? $request->validate($this->aturanKeterangan(), $this->pesanValidasi())
+            : $this->validasi($request, $transaksi);
+
+        [$foto, $hapus] = $this->ambilFoto($data);
+        $fotoLama = $transaksi->foto_bukti;
+        $data['foto_bukti'] = $foto ? $this->simpanFoto($foto) : ($hapus ? null : $fotoLama);
+
+        try {
+            $terkunci
+                ? $transaksi->update($data)
+                : $this->pembagian->ubah($transaksi, $data);
+        } catch (\Throwable $e) {
+            if ($data['foto_bukti'] !== $fotoLama) {
+                $this->hapusFoto($data['foto_bukti']);
+            }
+            throw $e;
         }
 
-        $data = $this->validasi($request, $transaksi);
-        $this->pembagian->ubah($transaksi, $data);
+        // Berkas lama baru dihapus setelah data berhasil disimpan.
+        if ($fotoLama && $fotoLama !== $data['foto_bukti']) {
+            $this->hapusFoto($fotoLama);
+        }
+
+        if ($terkunci) {
+            return redirect()->route('transaksi.show', $transaksi)
+                ->with('berhasil', 'Keterangan transaksi berhasil diubah. Nominal, penalang, dan penanggung tidak diubah karena sudah ada pembayaran.');
+        }
 
         return redirect()->route('transaksi.show', $transaksi)
             ->with('berhasil', 'Transaksi berhasil diubah. ' . $this->pesanPembagian($data['nominal'], count($data['penanggung'])));
@@ -120,10 +150,46 @@ class TransaksiController extends Controller
         $this->pastikanBolehDikelola($transaksi);
 
         $nama = $transaksi->nama_barang;
+        $foto = $transaksi->foto_bukti;
         $this->pembagian->hapus($transaksi);
+        $this->hapusFoto($foto);
 
         return redirect()->route('transaksi.index')
             ->with('berhasil', "Transaksi {$nama} berhasil dihapus.");
+    }
+
+    // FR-14: foto bukti disimpan di penyimpanan privat dan hanya dikirim melalui route ini.
+    // Route berada di dalam middleware 'kontrakan', sehingga foto kontrakan lain menghasilkan 404 (NFR-08).
+    public function bukti(Transaksi $transaksi)
+    {
+        abort_unless($transaksi->foto_bukti && Storage::disk('local')->exists($transaksi->foto_bukti), 404);
+
+        return Storage::disk('local')->response($transaksi->foto_bukti, null, [
+            'Cache-Control'          => 'private, max-age=3600',
+            'X-Content-Type-Options' => 'nosniff',
+        ]);
+    }
+
+    private function ambilFoto(array &$data): array
+    {
+        $foto  = $data['foto_bukti'] ?? null;
+        $hapus = ! empty($data['hapus_foto']);
+        unset($data['foto_bukti'], $data['hapus_foto']);
+
+        return [$foto, $hapus];
+    }
+
+    // Nama berkas dibuat acak oleh framework dan dikelompokkan per kontrakan; tidak memakai nama asli dari pengguna.
+    private function simpanFoto($foto): string
+    {
+        return $foto->store('bukti/' . app('anggota.aktif')->id_grup, 'local');
+    }
+
+    private function hapusFoto(?string $jalur): void
+    {
+        if ($jalur) {
+            Storage::disk('local')->delete($jalur);
+        }
     }
 
     private function pastikanBolehDikelola(Transaksi $transaksi): void
@@ -166,6 +232,8 @@ class TransaksiController extends Controller
         return [
             'nama_barang' => ['required', 'string', 'max:100'],
             'tanggal'     => ['required', 'date', 'before_or_equal:today'],
+            'foto_bukti'  => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
+            'hapus_foto'  => ['nullable', 'boolean'],
         ];
     }
 
@@ -219,6 +287,10 @@ class TransaksiController extends Controller
             'tanggal.required'        => 'Tanggal wajib diisi.',
             'tanggal.date'            => 'Format tanggal tidak valid.',
             'tanggal.before_or_equal' => 'Tanggal tidak boleh melebihi hari ini.',
+            'foto_bukti.uploaded'     => 'Foto gagal diunggah. Kemungkinan ukurannya terlalu besar.',
+            'foto_bukti.image'        => 'Berkas bukti harus berupa gambar.',
+            'foto_bukti.mimes'        => 'Foto bukti harus berformat JPG, PNG, atau WEBP.',
+            'foto_bukti.max'          => 'Ukuran foto bukti maksimal 5 MB.',
             'id_penalang.required'    => 'Penalang wajib dipilih.',
             'id_penalang.integer'     => 'Penalang tidak valid.',
             'id_penalang.exists'      => 'Penalang harus penghuni aktif kontrakan ini.',

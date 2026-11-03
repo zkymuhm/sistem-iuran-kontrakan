@@ -18,13 +18,13 @@ $penalang = (int) old('id_penalang', $modeUbah ? $transaksi->id_penalang : $angg
 
 <form method="POST"
     action="{{ $modeUbah ? route('transaksi.update', $transaksi) : route('transaksi.store') }}"
-    class="form" id="form-transaksi" novalidate>
+    class="form" id="form-transaksi" enctype="multipart/form-data" novalidate>
     @csrf
     @if ($modeUbah) @method('PUT') @endif
 
     @if ($terkunci)
     <div class="kartu teks-sekunder">
-        Sudah ada pembayaran pada transaksi ini. Hanya nama barang dan tanggal yang dapat diubah. Koreksi nominal dilakukan dengan mencatat transaksi baru.
+        Sudah ada pembayaran pada transaksi ini. Hanya nama barang, tanggal, dan foto bukti yang dapat diubah. Koreksi nominal dilakukan dengan mencatat transaksi baru.
     </div>
     @endif
 
@@ -73,6 +73,20 @@ $penalang = (int) old('id_penalang', $modeUbah ? $transaksi->id_penalang : $angg
         @if ($galatPenanggung) <p class="pesan-isian">{{ $galatPenanggung }}</p> @endif
     </div>
 
+    {{-- FR-14: foto bukti opsional; capture membuka kamera belakang di telepon genggam --}}
+    <div class="isian @error('foto_bukti') isian-salah @enderror">
+        <label for="foto_bukti">Foto Bukti (opsional)</label>
+        @if ($transaksi?->foto_bukti)
+        <img src="{{ route('transaksi.bukti', $transaksi) }}" alt="Foto bukti saat ini" class="foto-bukti foto-kecil">
+        <label class="pilihan-sebaris">
+            <input type="checkbox" name="hapus_foto" value="1" @checked(old('hapus_foto'))> Hapus foto ini
+        </label>
+        @endif
+        <input id="foto_bukti" type="file" name="foto_bukti" accept="image/*" capture="environment">
+        <p class="teks-sekunder">Foto diperkecil otomatis sebelum diunggah. Format JPG, PNG, atau WEBP.</p>
+        @error('foto_bukti') <p class="pesan-isian">{{ $message }}</p> @enderror
+    </div>
+
     @unless ($terkunci)
     {{-- Kartu rincian pembagian (Modul 6). Perkiraan dihitung di peramban; penyimpanan tetap dihitung ulang oleh server. --}}
     <div class="kartu">
@@ -84,6 +98,42 @@ $penalang = (int) old('id_penalang', $modeUbah ? $transaksi->id_penalang : $angg
     <button type="submit" class="tombol tombol-utama">Simpan</button>
     <a href="{{ $modeUbah ? route('transaksi.show', $transaksi) : route('beranda') }}" class="tombol tombol-sekunder">Batal</a>
 </form>
+
+<script>
+// Foto dari kamera telepon genggam berukuran beberapa MB. Foto diperkecil di peramban (sisi terpanjang 1600 piksel,
+// JPEG kualitas 0,8) agar unggahan cepat dan tidak melebihi batas ukuran server. Bila peramban tidak mendukung,
+// berkas asli tetap dikirim dan diperiksa batas ukurannya oleh server.
+(function () {
+    const masukan = document.getElementById('foto_bukti');
+    if (!masukan || typeof DataTransfer === 'undefined') return;
+
+    masukan.addEventListener('change', function () {
+        const berkas = masukan.files[0];
+        if (!berkas || !berkas.type.startsWith('image/')) return;
+
+        const gambar = new Image();
+        const alamat = URL.createObjectURL(berkas);
+        gambar.onload = function () {
+            const skala = Math.min(1, 1600 / Math.max(gambar.width, gambar.height));
+            const kanvas = document.createElement('canvas');
+            kanvas.width = Math.round(gambar.width * skala);
+            kanvas.height = Math.round(gambar.height * skala);
+            kanvas.getContext('2d').drawImage(gambar, 0, 0, kanvas.width, kanvas.height);
+            URL.revokeObjectURL(alamat);
+
+            kanvas.toBlob(function (blob) {
+                if (!blob || blob.size >= berkas.size) return;
+                const kecil = new File([blob], 'bukti.jpg', { type: 'image/jpeg' });
+                const wadah = new DataTransfer();
+                wadah.items.add(kecil);
+                masukan.files = wadah.files;
+            }, 'image/jpeg', 0.8);
+        };
+        gambar.onerror = function () { URL.revokeObjectURL(alamat); };
+        gambar.src = alamat;
+    });
+})();
+</script>
 
 @unless ($terkunci)
 <script>
