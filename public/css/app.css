@@ -114,3 +114,15 @@ input:disabled, select:disabled { background: var(--latar); color: var(--teks-2)
 
 .piutang { color: var(--lunas); }
 .hutang  { color: var(--risiko); }
+/* Modul 8 — siklus pelunasan dan dialog konfirmasi (frame F18 Modul 6) */
+.baris-pembagian { display: flex; flex-direction: column; gap: 8px; padding: 12px 0; }
+.daftar-baris .baris-pembagian + .baris-pembagian { border-top: 1px solid var(--garis); }
+.baris-pembagian .tombol { height: 48px; font-size: 14px; }
+
+.dialog {
+  border: none; border-radius: 16px; padding: 24px;
+  width: calc(100% - 32px); max-width: 398px;
+  background: var(--permukaan); color: var(--teks);
+}
+.dialog::backdrop { background: rgba(20, 20, 20, 0.4); }
+.dialog-isi { display: flex; flex-direction: column; gap: 16px; }

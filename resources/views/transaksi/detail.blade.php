@@ -7,6 +7,10 @@
 $labelStatus = ['belum' => 'Belum', 'menunggu_konfirmasi' => 'Menunggu Konfirmasi', 'lunas' => 'Lunas'];
 $jumlahLunas = $transaksi->detail->where('status_bayar', 'lunas')->count();
 $belumDiterima = $transaksi->detail->where('status_bayar', '!=', 'lunas')->sum('nominal_bagian');
+$idSaya = (int) $anggotaAktif->id_anggota;
+$sayaPenalang = (int) $transaksi->id_penalang === $idSaya;
+$namaPenalang = $transaksi->penalang->pengguna->nama;
+$rp = fn ($n) => 'Rp ' . number_format((int) $n, 0, ',', '.');
 @endphp
 
 <header class="kepala">
@@ -23,7 +27,7 @@ $belumDiterima = $transaksi->detail->where('status_bayar', '!=', 'lunas')->sum('
         <span class="judul-halaman">{{ $transaksi->nama_barang }}</span>
         <span class="judul-aplikasi nominal">@rupiah($transaksi->nominal)</span>
         <span class="teks-sekunder">{{ $transaksi->tanggal->translatedFormat('j F Y') }}</span>
-        <span class="teks-sekunder">Penalang: {{ $transaksi->penalang->pengguna->nama }}</span>
+        <span class="teks-sekunder">Penalang: {{ $namaPenalang }}</span>
         <span class="teks-sekunder">Dicatat oleh: {{ $transaksi->pencatat->pengguna->nama }}</span>
     </div>
 
@@ -36,12 +40,47 @@ $belumDiterima = $transaksi->detail->where('status_bayar', '!=', 'lunas')->sum('
 
         <div class="daftar-baris">
             @foreach ($transaksi->detail as $d)
-            <div class="baris">
-                <div>
-                    <div>{{ $d->anggota->pengguna->nama }}</div>
-                    <div class="teks-sekunder nominal">@rupiah($d->nominal_bagian)</div>
+            @php
+            $milikSaya = (int) $d->id_anggota === $idSaya;
+            $nama = $d->anggota->pengguna->nama;
+            $bagianPenalang = (int) $d->id_anggota === (int) $transaksi->id_penalang;
+            @endphp
+            <div class="baris-pembagian">
+                <div class="baris">
+                    <div>
+                        <div>{{ $nama }}{{ $milikSaya ? ' (Anda)' : '' }}</div>
+                        <div class="teks-sekunder nominal">
+                            @rupiah($d->nominal_bagian)
+                            {{-- FR-03: kepada siapa bagian ini harus dibayarkan --}}
+                            @if ($milikSaya && ! $bagianPenalang && $d->status_bayar !== 'lunas')
+                            · bayar kepada {{ $namaPenalang }}
+                            @endif
+                        </div>
+                    </div>
+                    <span class="chip chip-{{ $d->status_bayar }}">{{ $labelStatus[$d->status_bayar] }}</span>
                 </div>
-                <span class="chip chip-{{ $d->status_bayar }}">{{ $labelStatus[$d->status_bayar] }}</span>
+
+                {{-- UC-07: hanya pemilik bagian yang melihat tombol ini (BR-03) --}}
+                @if ($milikSaya && $d->status_bayar === 'belum')
+                <form method="POST" action="{{ route('pembagian.tandai', $d->id_detail) }}"
+                    data-judul="Saya Sudah Bayar"
+                    data-konfirmasi="Anda menyatakan sudah membayar {{ $rp($d->nominal_bagian) }} kepada {{ $namaPenalang }}. Status menjadi Menunggu Konfirmasi sampai {{ $namaPenalang }} mengonfirmasi penerimaan."
+                    data-tombol="Saya Sudah Bayar">
+                    @csrf
+                    <button type="submit" class="tombol tombol-utama">Saya Sudah Bayar</button>
+                </form>
+                @endif
+
+                {{-- UC-16: hanya penalang yang melihat tombol ini (NFR-02) --}}
+                @if ($sayaPenalang && $d->status_bayar === 'menunggu_konfirmasi')
+                <form method="POST" action="{{ route('pembagian.konfirmasi', $d->id_detail) }}"
+                    data-judul="Konfirmasi Penerimaan"
+                    data-konfirmasi="Konfirmasi bahwa Anda sudah menerima {{ $rp($d->nominal_bagian) }} dari {{ $nama }}? Status akan menjadi Lunas dan tidak dapat dikembalikan."
+                    data-tombol="Konfirmasi">
+                    @csrf
+                    <button type="submit" class="tombol tombol-utama">Konfirmasi</button>
+                </form>
+                @endif
             </div>
             @endforeach
         </div>
@@ -58,8 +97,10 @@ $belumDiterima = $transaksi->detail->where('status_bayar', '!=', 'lunas')->sum('
 
             @unless ($terkunci)
             <form method="POST" action="{{ route('transaksi.destroy', $transaksi) }}"
+                data-judul="Hapus Transaksi"
                 data-konfirmasi="Hapus transaksi {{ $transaksi->nama_barang }}? Pembagian biayanya ikut terhapus."
-                onsubmit="return confirm(this.dataset.konfirmasi)">
+                data-tombol="Hapus"
+                data-risiko>
                 @csrf
                 @method('DELETE')
                 <button type="submit" class="tombol tombol-risiko">Hapus</button>

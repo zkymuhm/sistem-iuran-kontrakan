@@ -4,6 +4,7 @@ use App\Http\Controllers\BerandaController;
 use App\Http\Controllers\TransaksiController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\KontrakanController;
+use App\Http\Controllers\PembayaranController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -40,5 +41,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/transaksi/{transaksi}/ubah', [TransaksiController::class, 'edit'])->name('transaksi.edit');
         Route::put('/transaksi/{transaksi}', [TransaksiController::class, 'update'])->name('transaksi.update');
         Route::delete('/transaksi/{transaksi}', [TransaksiController::class, 'destroy'])->name('transaksi.destroy');
+
+        // UC-07 dan UC-16: siklus pelunasan bagian
+        Route::post('/pembagian/{pembagian}/bayar', [PembayaranController::class, 'tandai'])->name('pembagian.tandai');
+        Route::post('/pembagian/{pembagian}/konfirmasi', [PembayaranController::class, 'konfirmasi'])->name('pembagian.konfirmasi');
     });
 });
