@@ -1,12 +1,10 @@
 @extends('layouts.app')
 
 @section('judul', 'Riwayat Transaksi')
+@section('navigasi', 'transaksi')
 
 @section('isi')
-<header class="kepala">
-    <a href="{{ route('beranda') }}" class="kembali" aria-label="Kembali">←</a>
-    <h1 class="judul-halaman">Riwayat Transaksi</h1>
-</header>
+<x-kepala judul="Riwayat Transaksi" />
 
 <div class="form">
     <a href="{{ route('transaksi.create') }}" class="tombol tombol-utama">Catat Transaksi</a>

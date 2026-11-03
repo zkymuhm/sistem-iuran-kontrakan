@@ -13,10 +13,7 @@ $namaPenalang = $transaksi->penalang->pengguna->nama;
 $rp = fn ($n) => 'Rp ' . number_format((int) $n, 0, ',', '.');
 @endphp
 
-<header class="kepala">
-    <a href="{{ route('transaksi.index') }}" class="kembali" aria-label="Kembali">←</a>
-    <h1 class="judul-halaman">Detail Transaksi</h1>
-</header>
+<x-kepala judul="Detail Transaksi" :kembali="route('transaksi.index')" />
 
 @error('transaksi')
 <div class="pesan pesan-gagal">{{ $message }}</div>
@@ -47,7 +44,9 @@ $rp = fn ($n) => 'Rp ' . number_format((int) $n, 0, ',', '.');
             @endphp
             <div class="baris-pembagian">
                 <div class="baris">
-                    <div>
+                    <div class="orang">
+                        <x-avatar :nama="$nama" />
+                        <div>
                         <div>{{ $nama }}{{ $milikSaya ? ' (Anda)' : '' }}</div>
                         <div class="teks-sekunder nominal">
                             @rupiah($d->nominal_bagian)
@@ -55,6 +54,7 @@ $rp = fn ($n) => 'Rp ' . number_format((int) $n, 0, ',', '.');
                             @if ($milikSaya && ! $bagianPenalang && $d->status_bayar !== 'lunas')
                             · bayar kepada {{ $namaPenalang }}
                             @endif
+                        </div>
                         </div>
                     </div>
                     <span class="chip chip-{{ $d->status_bayar }}">{{ $labelStatus[$d->status_bayar] }}</span>

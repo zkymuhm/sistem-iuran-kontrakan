@@ -3,10 +3,7 @@
 @section('judul', 'Buat Kontrakan')
 
 @section('isi')
-<header class="kepala">
-    <a href="{{ route('pilihan') }}" class="kembali" aria-label="Kembali">←</a>
-    <h1 class="judul-halaman">Buat Kontrakan</h1>
-</header>
+<x-kepala judul="Buat Kontrakan" :kembali="route('pilihan')" />
 
 <form method="POST" action="{{ route('kontrakan.buat') }}" class="form" novalidate>
     @csrf

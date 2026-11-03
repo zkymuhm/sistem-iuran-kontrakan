@@ -5,6 +5,7 @@ use App\Http\Controllers\TransaksiController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\KontrakanController;
 use App\Http\Controllers\PembayaranController;
+use App\Http\Controllers\SaldoController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -33,6 +34,7 @@ Route::middleware('auth')->group(function () {
     // Wilayah 3 — sudah tergabung kontrakan
     Route::middleware('kontrakan')->group(function () {
         Route::get('/beranda', BerandaController::class)->name('beranda');
+        Route::get('/saldo', SaldoController::class)->name('saldo');
 
         Route::get('/transaksi', [TransaksiController::class, 'index'])->name('transaksi.index');
         Route::get('/transaksi/catat', [TransaksiController::class, 'create'])->name('transaksi.create');

@@ -1,0 +1,16 @@
+{
+  "name": "Iuran Kontrakan",
+  "short_name": "Iuran",
+  "description": "Pencatatan iuran dan pembagian biaya kebutuhan bersama kontrakan",
+  "lang": "id",
+  "start_url": "/beranda",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#FAFAFA",
+  "theme_color": "#FAFAFA",
+  "icons": [
+    { "src": "/ikon/ikon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/ikon/ikon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/ikon/ikon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

@@ -9,10 +9,18 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/app.css') }}?v={{ filemtime(public_path('css/app.css')) }}">
+
+    {{-- PWA: dapat dipasang ke layar utama dan terbuka tanpa kolom alamat. Service worker tidak dipasang karena akses offline di luar ruang lingkup. --}}
+    <link rel="manifest" href="{{ asset('manifest.webmanifest') }}">
+    <meta name="theme-color" content="#FAFAFA">
+    <link rel="icon" href="{{ asset('ikon/ikon-192.png') }}" type="image/png">
+    <link rel="apple-touch-icon" href="{{ asset('ikon/apple-touch-icon.png') }}">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Iuran Kontrakan">
 </head>
 
 <body>
-    <main class="halaman">
+    <main class="halaman @hasSection('navigasi') ada-navigasi @endif">
         @if (session('berhasil'))
         <div class="pesan pesan-berhasil">{{ session('berhasil') }}</div>
         @endif
@@ -23,6 +31,29 @@
 
         @yield('isi')
     </main>
+
+    @hasSection('navigasi')
+    @php
+    $aktif = trim($__env->yieldContent('navigasi'));
+    // Menu hanya ditampilkan bila halamannya sudah ada, sehingga tidak ada menu yang tidak merespons (temuan pengujian Modul 6).
+    $menu = collect([
+        ['kunci' => 'beranda',   'route' => 'beranda',         'label' => 'Beranda'],
+        ['kunci' => 'transaksi', 'route' => 'transaksi.index', 'label' => 'Transaksi'],
+        ['kunci' => 'saldo',     'route' => 'saldo',           'label' => 'Saldo'],
+        ['kunci' => 'rekap',     'route' => 'rekap',           'label' => 'Rekap'],
+        ['kunci' => 'kontrakan', 'route' => 'kontrakan.index', 'label' => 'Kontrakan'],
+    ])->filter(fn ($m) => Route::has($m['route']));
+    @endphp
+    <nav class="navigasi-bawah" aria-label="Navigasi utama">
+        @foreach ($menu as $m)
+        <a href="{{ route($m['route']) }}" class="menu {{ $aktif === $m['kunci'] ? 'menu-aktif' : '' }}"
+            @if ($aktif === $m['kunci']) aria-current="page" @endif>
+            <x-ikon :nama="$m['kunci']" />
+            <span>{{ $m['label'] }}</span>
+        </a>
+        @endforeach
+    </nav>
+    @endif
 
     {{-- Dialog konfirmasi bersama (frame F18 Modul 6). Dipakai oleh setiap form yang memiliki atribut data-konfirmasi. --}}
     <dialog id="dialog-konfirmasi" class="dialog" aria-labelledby="dialog-judul">

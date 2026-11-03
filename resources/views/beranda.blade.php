@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('judul', 'Beranda')
+@section('navigasi', 'beranda')
 
 @section('isi')
 
@@ -28,7 +29,6 @@
 
     <div class="form">
         <a href="{{ route('transaksi.create') }}" class="tombol tombol-utama">Catat Transaksi</a>
-        <a href="{{ route('transaksi.index') }}" class="tombol tombol-sekunder">Riwayat Transaksi</a>
     </div>
 
     <div class="kartu">

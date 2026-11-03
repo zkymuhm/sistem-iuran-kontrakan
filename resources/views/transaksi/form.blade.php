@@ -14,10 +14,7 @@ $penalang = (int) old('id_penalang', $modeUbah ? $transaksi->id_penalang : $angg
 @section('judul', $modeUbah ? 'Ubah Transaksi' : 'Catat Transaksi')
 
 @section('isi')
-<header class="kepala">
-    <a href="{{ $modeUbah ? route('transaksi.show', $transaksi) : route('beranda') }}" class="kembali" aria-label="Kembali">←</a>
-    <h1 class="judul-halaman">{{ $modeUbah ? 'Ubah Transaksi' : 'Catat Transaksi' }}</h1>
-</header>
+<x-kepala :judul="$modeUbah ? 'Ubah Transaksi' : 'Catat Transaksi'" :kembali="$modeUbah ? route('transaksi.show', $transaksi) : route('beranda')" />
 
 <form method="POST"
     action="{{ $modeUbah ? route('transaksi.update', $transaksi) : route('transaksi.store') }}"

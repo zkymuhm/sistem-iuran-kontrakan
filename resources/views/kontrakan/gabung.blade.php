@@ -5,10 +5,7 @@
 @section('isi')
 @php($pesanGalat = $galat ?? $errors->first('kode'))
 
-<header class="kepala">
-    <a href="{{ route('pilihan') }}" class="kembali" aria-label="Kembali">←</a>
-    <h1 class="judul-halaman">Gabung Kontrakan</h1>
-</header>
+<x-kepala judul="Gabung Kontrakan" :kembali="route('pilihan')" />
 
 <div class="tumpukan">
     <form method="GET" action="{{ route('kontrakan.gabung') }}" class="form" novalidate>
