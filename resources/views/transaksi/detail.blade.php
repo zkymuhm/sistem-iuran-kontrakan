@@ -33,7 +33,18 @@ $rp = fn ($n) => 'Rp ' . number_format((int) $n, 0, ',', '.');
             <span class="kartu-judul">Pembagian Biaya</span>
             <span class="teks-sekunder">{{ $jumlahLunas }} dari {{ $transaksi->detail->count() }} Lunas</span>
         </div>
-        <span class="teks-sekunder">Belum diterima penalang: <span class="nominal">@rupiah($belumDiterima)</span></span>
+        @php
+        $terkumpul = (int) $transaksi->detail->where('status_bayar', 'lunas')->sum('nominal_bagian');
+        $persen = $transaksi->nominal > 0 ? (int) floor($terkumpul * 100 / $transaksi->nominal) : 0;
+        @endphp
+        {{-- Bar kemajuan pelunasan (Modul 6) --}}
+        <div class="kemajuan" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ $persen }}" aria-label="Kemajuan pelunasan">
+            <div class="kemajuan-isi" style="width: {{ $persen }}%"></div>
+        </div>
+        <div class="baris teks-sekunder">
+            <span>Terkumpul <span class="nominal">@rupiah($terkumpul)</span></span>
+            <span>Sisa <span class="nominal">@rupiah($belumDiterima)</span></span>
+        </div>
 
         <div class="daftar-baris">
             @foreach ($transaksi->detail as $d)

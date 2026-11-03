@@ -14,14 +14,38 @@ class TransaksiController extends Controller
     public function __construct(private PembagianService $pembagian) {}
 
     // UC-04, FR-04: terbaru dulu. Tanggal tidak menyimpan jam, sehingga id menjadi urutan kedua.
-    public function index()
+    // Kegiatan 5 Modul 8: pencarian nama barang serta filter bulan dan status pelunasan.
+    public function index(Request $request)
     {
+        $cari   = trim((string) $request->query('cari', ''));
+        $bulan  = (string) $request->query('bulan', '');
+        $status = (string) $request->query('status', '');
+
+        // Nilai filter yang tidak sah diabaikan, bukan menyebabkan galat.
+        if (! preg_match('/^\d{4}-(0[1-9]|1[0-2])$/', $bulan)) {
+            $bulan = '';
+        }
+        if (! in_array($status, ['belum_lunas', 'lunas'], true)) {
+            $status = '';
+        }
+
         $daftar = Transaksi::with(['penalang.pengguna', 'detail'])
+            // Pencarian memakai parameter terikat, sehingga tanda % dan _ dari pengguna diperlakukan sebagai teks biasa.
+            ->when($cari !== '', fn ($q) => $q->where('nama_barang', 'like', '%' . addcslashes($cari, '%_\\') . '%'))
+            ->when($bulan !== '', fn ($q) => $q->whereYear('tanggal', substr($bulan, 0, 4))->whereMonth('tanggal', substr($bulan, 5, 2)))
+            ->when($status === 'belum_lunas', fn ($q) => $q->whereHas('detail', fn ($d) => $d->where('status_bayar', '!=', 'lunas')))
+            ->when($status === 'lunas', fn ($q) => $q->whereDoesntHave('detail', fn ($d) => $d->where('status_bayar', '!=', 'lunas')))
             ->orderByDesc('tanggal')
             ->orderByDesc('id_transaksi')
             ->get();
 
-        return view('transaksi.index', compact('daftar'));
+        return view('transaksi.index', [
+            'daftar'    => $daftar,
+            'cari'      => $cari,
+            'bulan'     => $bulan,
+            'status'    => $status,
+            'disaring'  => $cari !== '' || $bulan !== '' || $status !== '',
+        ]);
     }
 
     public function create()

@@ -169,3 +169,11 @@ input:disabled, select:disabled { background: var(--latar); color: var(--teks-2)
 .bagian { display: flex; flex-direction: column; gap: 8px; }
 .bagian a.kartu-judul, .bagian a.teks-sekunder { color: inherit; text-decoration: none; }
 .bagian .kartu .chip { align-self: flex-start; }
+
+/* Modul 8 — filter riwayat dan bar kemajuan */
+.saring { display: flex; flex-direction: column; gap: 12px; padding: 16px; background: var(--permukaan); border: 1px solid var(--garis); border-radius: 16px; }
+.saring-baris { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.saring-baris .isian input, .saring-baris .isian select { min-width: 0; width: 100%; }
+
+.kemajuan { height: 8px; border-radius: 999px; background: var(--belum-bg); overflow: hidden; }
+.kemajuan-isi { height: 100%; background: var(--lunas); }
