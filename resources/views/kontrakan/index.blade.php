@@ -19,7 +19,7 @@
 
     {{-- UC-15, FR-20: kode invitasi hanya berlaku selama kontrakan aktif (BR-11) --}}
     @if ($bisaTulis)
-    <div class="kartu">
+    <div class="kartu kartu-kode">
         <span class="teks-sekunder">Kode invitasi</span>
         <span class="kode" id="kode-invitasi">{{ $grup->kode_invitasi }}</span>
         <span class="teks-sekunder">Bagikan kode ini kepada calon penghuni. Mereka memasukkannya pada menu Gabung Kontrakan.</span>

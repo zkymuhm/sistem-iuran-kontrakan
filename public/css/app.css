@@ -210,3 +210,8 @@ a.kartu .kartu-judul { color: var(--teks); }
 .foto-kecil { max-height: 160px; }
 .isian .pilihan-sebaris { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--teks); }
 .isian input[type="file"] { height: auto; padding: 12px 16px; }
+
+/* Kartu kode invitasi: seluruh isi rata tengah. letter-spacing menambah ruang setelah huruf terakhir,
+   sehingga kode diberi padding kiri yang sama agar benar-benar berada di tengah. */
+.kartu-kode { align-items: center; text-align: center; }
+.kartu-kode .kode { padding-left: 4px; }
