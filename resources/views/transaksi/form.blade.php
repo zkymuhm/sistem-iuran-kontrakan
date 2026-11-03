@@ -13,12 +13,14 @@ $penalang = (int) old('id_penalang', $modeUbah ? $transaksi->id_penalang : $angg
 
 @section('judul', $modeUbah ? 'Ubah Transaksi' : 'Catat Transaksi')
 
+@section('navigasi-lebar', 'transaksi')
+
 @section('isi')
 <x-kepala :judul="$modeUbah ? 'Ubah Transaksi' : 'Catat Transaksi'" :kembali="$modeUbah ? route('transaksi.show', $transaksi) : route('beranda')" />
 
 <form method="POST"
     action="{{ $modeUbah ? route('transaksi.update', $transaksi) : route('transaksi.store') }}"
-    class="form" id="form-transaksi" enctype="multipart/form-data" novalidate>
+    class="form form-transaksi" id="form-transaksi" enctype="multipart/form-data" novalidate>
     @csrf
     @if ($modeUbah) @method('PUT') @endif
 
@@ -28,6 +30,8 @@ $penalang = (int) old('id_penalang', $modeUbah ? $transaksi->id_penalang : $angg
     </div>
     @endif
 
+    {{-- Di laptop: kiri data pembelian, kanan pembagian. Di HP pembungkus ini tidak berpengaruh (display: contents). --}}
+    <div class="form-kiri">
     <div class="isian @error('nama_barang') isian-salah @enderror">
         <label for="nama_barang">Nama Barang</label>
         <input id="nama_barang" type="text" name="nama_barang" value="{{ old('nama_barang', $transaksi?->nama_barang) }}">
@@ -58,6 +62,9 @@ $penalang = (int) old('id_penalang', $modeUbah ? $transaksi->id_penalang : $angg
         @error('id_penalang') <p class="pesan-isian">{{ $message }}</p> @enderror
     </div>
 
+    </div>
+
+    <div class="form-kanan">
     <div class="isian">
         <span class="label-bagian">Penanggung Biaya</span>
         @php($galatPenanggung = $errors->first('penanggung') ?: $errors->first('penanggung.*'))
@@ -97,6 +104,7 @@ $penalang = (int) old('id_penalang', $modeUbah ? $transaksi->id_penalang : $angg
 
     <button type="submit" class="tombol tombol-utama">Simpan</button>
     <a href="{{ $modeUbah ? route('transaksi.show', $transaksi) : route('beranda') }}" class="tombol tombol-sekunder">Batal</a>
+    </div>
 </form>
 
 <script>

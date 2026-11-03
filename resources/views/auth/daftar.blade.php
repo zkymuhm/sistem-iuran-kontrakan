@@ -2,14 +2,21 @@
 
 @section('judul', 'Daftar Akun')
 
+@section('kelas-halaman', 'halaman-auth')
+
 @section('isi')
 <div class="auth">
-    <div>
+    <div class="auth-intro">
         <h1 class="judul-aplikasi">Daftar Akun</h1>
         <p class="teks-sekunder">Akun dipakai untuk mengenali Anda pada setiap kontrakan</p>
+        <ul class="auth-poin hanya-lebar-blok">
+            <li>Catat setiap pembelian bersama beserta penalangnya</li>
+            <li>Biaya dibagi otomatis kepada penghuni yang ikut menanggung</li>
+            <li>Lihat siapa yang sudah membayar dan siapa yang belum</li>
+        </ul>
     </div>
 
-    <form method="POST" action="{{ route('daftar') }}" class="form" novalidate>
+    <form method="POST" action="{{ route('daftar') }}" class="form auth-form" novalidate>
         @csrf
 
         <div class="isian @error('nama') isian-salah @enderror">
@@ -38,6 +45,6 @@
         <button type="submit" class="tombol tombol-utama">Daftar</button>
     </form>
 
-    <p class="tautan-bawah">Sudah punya akun? <a href="{{ route('login') }}">Masuk</a></p>
+    <p class="tautan-bawah auth-tautan">Sudah punya akun? <a href="{{ route('login') }}">Masuk</a></p>
 </div>
 @endsection

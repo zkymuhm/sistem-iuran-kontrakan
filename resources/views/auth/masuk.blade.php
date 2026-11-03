@@ -2,15 +2,22 @@
 
 @section('judul', 'Masuk')
 
+@section('kelas-halaman', 'halaman-auth')
+
 @section('isi')
 <div class="auth">
-    <div>
+    <div class="auth-intro">
         <h1 class="judul-aplikasi">Iuran Kontrakan</h1>
         <p class="teks-sekunder">Catat dan bagi kebutuhan bersama kontrakan</p>
+        <ul class="auth-poin hanya-lebar-blok">
+            <li>Catat setiap pembelian bersama beserta penalangnya</li>
+            <li>Biaya dibagi otomatis kepada penghuni yang ikut menanggung</li>
+            <li>Lihat siapa yang sudah membayar dan siapa yang belum</li>
+        </ul>
     </div>
 
     {{-- novalidate: validasi dilakukan di server agar pesan kesalahan seragam dan berbahasa Indonesia --}}
-    <form method="POST" action="{{ route('login') }}" class="form" novalidate>
+    <form method="POST" action="{{ route('login') }}" class="form auth-form" novalidate>
         @csrf
 
         <div class="isian @error('email') isian-salah @enderror">
@@ -28,6 +35,6 @@
         <button type="submit" class="tombol tombol-utama">Masuk</button>
     </form>
 
-    <p class="tautan-bawah">Belum punya akun? <a href="{{ route('daftar') }}">Daftar</a></p>
+    <p class="tautan-bawah auth-tautan">Belum punya akun? <a href="{{ route('daftar') }}">Daftar</a></p>
 </div>
 @endsection

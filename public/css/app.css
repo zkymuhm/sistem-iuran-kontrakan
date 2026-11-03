@@ -323,3 +323,58 @@ a.kartu .kartu-judul { color: var(--teks); }
   .hanya-lebar { display: flex; }
   .rekap-angka { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 8px; }
 }
+
+/* Halaman turunan (Catat, Ubah, Detail): sidebar hanya di layar lebar; di HP tetap tanpa navigasi */
+.navigasi-bawah.nav-lebar-saja { display: none; }
+.halaman.ada-navigasi.nav-lebar-saja { padding-bottom: 32px; }
+.form-kiri, .form-kanan { display: contents; }
+.hanya-lebar-blok { display: none; }
+
+@media (min-width: 768px) {
+  .navigasi-bawah.nav-lebar-saja { display: flex; }
+  .halaman.ada-navigasi.nav-lebar-saja { padding-bottom: 48px; }
+  .halaman.ada-navigasi > .form-transaksi { max-width: 640px; }
+
+  /* Masuk dan Daftar: panel identitas aplikasi di kiri, formulir di kanan */
+  .halaman.halaman-auth {
+    max-width: 960px; min-height: 100vh; padding: 48px 32px;
+    display: flex; flex-direction: column; justify-content: center; gap: 16px;
+  }
+  .halaman-auth .auth {
+    padding-top: 0; gap: 24px 48px; align-items: center;
+    display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-areas: "intro form" "intro tautan";
+  }
+  .auth-intro {
+    grid-area: intro; align-self: stretch;
+    display: flex; flex-direction: column; justify-content: center; gap: 16px;
+    padding: 48px; border-radius: 16px; background: var(--utama); color: #FFFFFF;
+  }
+  .auth-intro .teks-sekunder { color: rgba(255, 255, 255, 0.72); }
+  .hanya-lebar-blok { display: block; }
+  .auth-poin { display: flex; flex-direction: column; gap: 8px; padding-left: 20px; color: rgba(255, 255, 255, 0.88); }
+  .auth-form   { grid-area: form; align-self: end; }
+  .auth-tautan { grid-area: tautan; align-self: start; text-align: left; }
+}
+
+@media (min-width: 1024px) {
+  /* Catat dan Ubah Transaksi: kiri data pembelian, kanan pembagian dan tombol */
+  .halaman.ada-navigasi > .form-transaksi {
+    max-width: 1080px;
+    display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 24px 32px; align-items: start;
+  }
+  .form-transaksi > :not(.form-kiri):not(.form-kanan) { grid-column: 1 / -1; }
+  .form-kiri, .form-kanan { display: flex; flex-direction: column; gap: 16px; }
+
+  /* Detail Transaksi: kiri keterangan dan tombol kelola, kanan pembagian */
+  .detail-transaksi {
+    display: grid; gap: 24px 32px; align-items: start;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+    grid-template-areas: "info pembagian" "kelola pembagian";
+    grid-template-rows: auto 1fr;
+  }
+  .area-kelola    { align-self: start; }
+  .area-info      { grid-area: info; }
+  .area-pembagian { grid-area: pembagian; }
+  .area-kelola    { grid-area: kelola; }
+}

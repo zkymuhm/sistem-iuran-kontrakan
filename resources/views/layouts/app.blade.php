@@ -20,7 +20,9 @@
 </head>
 
 <body>
-    <main class="halaman @hasSection('navigasi') ada-navigasi @endif">
+    {{-- 'navigasi'       : halaman utama, navigasi tampil di HP (bawah) dan di laptop (sidebar).
+         'navigasi-lebar' : halaman turunan, sidebar hanya di laptop; di HP tetap tanpa navigasi sesuai rancangan Modul 6. --}}
+    <main class="halaman @yield('kelas-halaman') @hasSection('navigasi') ada-navigasi @endif @hasSection('navigasi-lebar') ada-navigasi nav-lebar-saja @endif">
         @if (session('berhasil'))
         <div class="pesan pesan-berhasil">{{ session('berhasil') }}</div>
         @endif
@@ -43,9 +45,10 @@
         @yield('isi')
     </main>
 
-    @hasSection('navigasi')
+    @if ($__env->hasSection('navigasi') || $__env->hasSection('navigasi-lebar'))
     @php
-    $aktif = trim($__env->yieldContent('navigasi'));
+    $aktif = trim($__env->yieldContent('navigasi')) ?: trim($__env->yieldContent('navigasi-lebar'));
+    $hanyaLebar = ! $__env->hasSection('navigasi');
     // Menu hanya ditampilkan bila halamannya sudah ada, sehingga tidak ada menu yang tidak merespons (temuan pengujian Modul 6).
     $menu = collect([
         ['kunci' => 'beranda',   'route' => 'beranda',         'label' => 'Beranda'],
@@ -55,7 +58,7 @@
         ['kunci' => 'kontrakan', 'route' => 'kontrakan.index', 'label' => 'Kontrakan'],
     ])->filter(fn ($m) => Route::has($m['route']));
     @endphp
-    <nav class="navigasi-bawah" aria-label="Navigasi utama">
+    <nav class="navigasi-bawah {{ $hanyaLebar ? 'nav-lebar-saja' : '' }}" aria-label="Navigasi utama">
         @foreach ($menu as $m)
         <a href="{{ route($m['route']) }}" class="menu {{ $aktif === $m['kunci'] ? 'menu-aktif' : '' }}"
             @if ($aktif === $m['kunci']) aria-current="page" @endif>

@@ -2,6 +2,8 @@
 
 @section('judul', $transaksi->nama_barang)
 
+@section('navigasi-lebar', 'transaksi')
+
 @section('isi')
 @php
 $labelStatus = ['belum' => 'Belum', 'menunggu_konfirmasi' => 'Menunggu Konfirmasi', 'lunas' => 'Lunas'];
@@ -19,8 +21,8 @@ $rp = fn ($n) => 'Rp ' . number_format((int) $n, 0, ',', '.');
 <div class="pesan pesan-gagal">{{ $message }}</div>
 @enderror
 
-<div class="tumpukan">
-    <div class="kartu">
+<div class="tumpukan detail-transaksi">
+    <div class="kartu area-info">
         <span class="judul-halaman">{{ $transaksi->nama_barang }}</span>
         <span class="judul-aplikasi nominal">@rupiah($transaksi->nominal)</span>
         <span class="teks-sekunder">{{ $transaksi->tanggal->translatedFormat('j F Y') }}</span>
@@ -34,7 +36,7 @@ $rp = fn ($n) => 'Rp ' . number_format((int) $n, 0, ',', '.');
         @endif
     </div>
 
-    <div class="kartu">
+    <div class="kartu area-pembagian">
         <div class="baris">
             <span class="kartu-judul">Pembagian Biaya</span>
             <span class="teks-sekunder">{{ $jumlahLunas }} dari {{ $transaksi->detail->count() }} Lunas</span>
@@ -104,7 +106,7 @@ $rp = fn ($n) => 'Rp ' . number_format((int) $n, 0, ',', '.');
     </div>
 
     @if ($bolehKelola && $bisaTulis)
-    <div class="form">
+    <div class="form area-kelola">
         @if ($terkunci)
         <p class="teks-sekunder">Sudah ada pembayaran, sehingga nominal dan penanggung terkunci dan transaksi tidak dapat dihapus.</p>
         @endif
