@@ -6,14 +6,16 @@
 @section('isi')
 @php($rp = fn ($n) => 'Rp ' . number_format((int) $n, 0, ',', '.'))
 
-<div class="tumpukan">
-    <div>
+{{-- Urutan di HP: salam, saldo, indikator, Catat, daftar tindakan, transaksi terbaru.
+     Di layar lebar bagian yang sama disusun ulang dengan grid (lihat app.css), tanpa mengubah urutan HP. --}}
+<div class="tumpukan beranda">
+    <div class="area-salam">
         <p class="teks-sekunder">Halo, {{ auth()->user()->nama }}</p>
         <h1 class="judul-halaman">{{ $anggotaAktif->grup->nama_grup }}</h1>
     </div>
 
     {{-- Indikator utama --}}
-    <div class="kartu">
+    <div class="kartu area-saldo">
         <span class="teks-sekunder">Saldo Anda</span>
         <span class="judul-aplikasi nominal {{ $saldoSaya > 0 ? 'piutang' : ($saldoSaya < 0 ? 'hutang' : '') }}">
             {{ $saldoSaya > 0 ? '+' : ($saldoSaya < 0 ? '−' : '') }}@rupiah(abs($saldoSaya))
@@ -43,8 +45,11 @@
     </div>
 
     @if ($bisaTulis)
-    <a href="{{ route('transaksi.create') }}" class="tombol tombol-utama">Catat Transaksi</a>
+    <a href="{{ route('transaksi.create') }}" class="tombol tombol-utama area-catat">Catat Transaksi</a>
     @endif
+
+    {{-- Daftar yang perlu ditindaklanjuti --}}
+    <div class="kolom-tindak">
 
     {{-- UC-16: penalang mengonfirmasi langsung dari Beranda --}}
     <section id="menunggu" class="bagian">
@@ -105,7 +110,9 @@
         @endforelse
     </section>
 
-    <section class="bagian">
+    </div>
+
+    <section class="bagian area-terbaru">
         <div class="baris">
             <h2 class="kartu-judul">Transaksi Terbaru</h2>
             <a href="{{ route('transaksi.index') }}" class="teks-sekunder">Lihat semua</a>

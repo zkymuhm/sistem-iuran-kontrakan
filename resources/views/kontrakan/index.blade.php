@@ -6,20 +6,14 @@
 @section('isi')
 @php($rp = fn ($n) => 'Rp ' . number_format(abs((int) $n), 0, ',', '.'))
 
-<x-kepala judul="Kontrakan" />
+<x-kepala :judul="$grup->nama_grup"
+    :subjudul="$aktif->count() . ' penghuni aktif' . ($grup->status_aktif !== 'aktif' ? ' · Dibubarkan (arsip)' : '')" />
 
-<div class="tumpukan">
-    <div>
-        <h2 class="judul-halaman">{{ $grup->nama_grup }}</h2>
-        <p class="teks-sekunder">
-            {{ $aktif->count() }} penghuni aktif
-            @if ($grup->status_aktif !== 'aktif') · <span class="label-nonaktif">Dibubarkan (arsip)</span> @endif
-        </p>
-    </div>
-
+{{-- Di layar lebar: kiri kode invitasi dan tindakan, kanan daftar penghuni. Urutan di HP tidak berubah. --}}
+<div class="tumpukan kontrakan">
     {{-- UC-15, FR-20: kode invitasi hanya berlaku selama kontrakan aktif (BR-11) --}}
     @if ($bisaTulis)
-    <div class="kartu kartu-kode">
+    <div class="kartu kartu-kode area-kode">
         <span class="teks-sekunder">Kode invitasi</span>
         <span class="kode" id="kode-invitasi">{{ $grup->kode_invitasi }}</span>
         <span class="teks-sekunder">Bagikan kode ini kepada calon penghuni. Mereka memasukkannya pada menu Gabung Kontrakan.</span>
@@ -29,6 +23,7 @@
     </div>
     @endif
 
+    <div class="area-penghuni">
     <section class="bagian">
         <h3 class="kartu-judul">Penghuni Aktif</h3>
         <div class="kartu">
@@ -81,14 +76,15 @@
         </div>
     </section>
     @endif
+    </div>
 
-    <a href="{{ route('arsip.index') }}" class="kartu">
+    <a href="{{ route('arsip.index') }}" class="kartu area-arsip">
         <span class="kartu-judul">Arsip Kontrakan</span>
         <span class="teks-sekunder">Kontrakan yang sudah dibubarkan atau yang pernah Anda tinggalkan.</span>
     </a>
 
     @if ($bisaTulis)
-    <section class="bagian">
+    <section class="bagian area-anggota">
         <h3 class="kartu-judul">Keanggotaan</h3>
 
         {{-- UC-17, FR-21 --}}
@@ -113,7 +109,7 @@
     </section>
     @endif
 
-    <section class="bagian">
+    <section class="bagian area-akun">
         <h3 class="kartu-judul">Akun</h3>
         <div class="kartu">
             <span>{{ auth()->user()->nama }}</span>

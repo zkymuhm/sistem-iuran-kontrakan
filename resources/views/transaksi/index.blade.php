@@ -4,7 +4,11 @@
 @section('navigasi', 'transaksi')
 
 @section('isi')
-<x-kepala judul="Riwayat Transaksi" />
+<x-kepala judul="Riwayat Transaksi">
+    @if ($bisaTulis)
+    <a href="{{ route('transaksi.create') }}" class="tombol tombol-utama hanya-hp">Catat Transaksi</a>
+    @endif
+</x-kepala>
 
 <div class="form">
     @if ($bisaTulis)
@@ -43,6 +47,7 @@
     <p class="teks-sekunder">{{ $daftar->count() }} transaksi ditemukan · total <span class="nominal">@rupiah($daftar->sum('nominal'))</span></p>
     @endif
 
+    <div class="daftar-kartu">
     @forelse ($daftar as $t)
     @php($jumlahLunas = $t->detail->where('status_bayar', 'lunas')->count())
     <a href="{{ route('transaksi.show', $t) }}" class="kartu">
@@ -60,5 +65,6 @@
         {{ $disaring ? 'Tidak ada transaksi yang sesuai dengan filter.' : 'Belum ada transaksi. Tekan Catat Transaksi untuk mencatat pembelian pertama.' }}
     </div>
     @endforelse
+    </div>
 </div>
 @endsection
