@@ -42,7 +42,9 @@
         </a>
     </div>
 
+    @if ($bisaTulis)
     <a href="{{ route('transaksi.create') }}" class="tombol tombol-utama">Catat Transaksi</a>
+    @endif
 
     {{-- UC-16: penalang mengonfirmasi langsung dari Beranda --}}
     <section id="menunggu" class="bagian">
@@ -124,15 +126,5 @@
         @endforelse
     </section>
 
-    {{-- Sementara di Beranda sampai halaman Kontrakan dibuat --}}
-    <div class="kartu">
-        <span class="teks-sekunder">Kode invitasi</span>
-        <span class="kode">{{ $anggotaAktif->grup->kode_invitasi }}</span>
-    </div>
-
-    <form method="POST" action="{{ route('keluar') }}">
-        @csrf
-        <button type="submit" class="tombol tombol-sekunder">Keluar</button>
-    </form>
 </div>
 @endsection

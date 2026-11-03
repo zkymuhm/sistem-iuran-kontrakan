@@ -198,3 +198,9 @@ input:disabled, select:disabled { background: var(--latar); color: var(--teks-2)
   .tabel th, .tabel td { white-space: normal; }
   .kartu { break-inside: avoid; }
 }
+
+/* Modul 8 — halaman Kontrakan dan mode baca */
+.tombol-kecil { width: auto; height: 40px; padding: 0 16px; font-size: 14px; }
+.pesan-baca { display: flex; flex-direction: column; gap: 8px; background: var(--tunggu-bg); color: var(--tunggu); }
+.pesan-baca .tombol { align-self: flex-start; }
+a.kartu .kartu-judul { color: var(--teks); }

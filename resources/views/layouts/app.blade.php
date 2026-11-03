@@ -25,6 +25,17 @@
         <div class="pesan pesan-berhasil">{{ session('berhasil') }}</div>
         @endif
 
+        {{-- BR-14, BR-16: mode baca untuk penghuni nonaktif dan kontrakan arsip --}}
+        @if (isset($bisaTulis) && ! $bisaTulis)
+        <div class="pesan pesan-baca">
+            <span>Mode baca: {{ $anggotaAktif->grup->status_aktif !== 'aktif' ? 'kontrakan ini sudah dibubarkan' : 'Anda sudah tidak aktif di kontrakan ini' }}. Pembayaran yang menyangkut Anda tetap dapat dituntaskan.</span>
+            <form method="POST" action="{{ route('arsip.tutup') }}">
+                @csrf
+                <button type="submit" class="tombol tombol-sekunder tombol-kecil">Tutup Arsip</button>
+            </form>
+        </div>
+        @endif
+
         @error('aksi')
         <div class="pesan pesan-gagal">{{ $message }}</div>
         @enderror

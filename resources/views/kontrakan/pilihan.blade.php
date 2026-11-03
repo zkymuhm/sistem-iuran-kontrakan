@@ -18,6 +18,10 @@
             <span class="kartu-judul">Gabung Kontrakan</span>
             <span class="teks-sekunder">Masukkan kode invitasi dari penghuni lain.</span>
         </a>
+        <a href="{{ route('arsip.index') }}" class="kartu">
+            <span class="kartu-judul">Arsip Kontrakan</span>
+            <span class="teks-sekunder">Lihat kontrakan lama dan tuntaskan pembayaran yang tersisa.</span>
+        </a>
     </div>
 
     <form method="POST" action="{{ route('keluar') }}">

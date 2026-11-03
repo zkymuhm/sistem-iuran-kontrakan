@@ -7,7 +7,9 @@
 <x-kepala judul="Riwayat Transaksi" />
 
 <div class="form">
+    @if ($bisaTulis)
     <a href="{{ route('transaksi.create') }}" class="tombol tombol-utama">Catat Transaksi</a>
+    @endif
 
     {{-- Filter memakai GET agar hasil penyaringan dapat dimuat ulang dan dibagikan sebagai tautan --}}
     <form method="GET" action="{{ route('transaksi.index') }}" class="saring">

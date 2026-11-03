@@ -15,6 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'kontrakan'       => \App\Http\Middleware\PastikanKontrakanAktif::class,
             'tanpa.kontrakan' => \App\Http\Middleware\PastikanTanpaKontrakan::class,
+            'kontrakan.tulis' => \App\Http\Middleware\PastikanBisaTulis::class,
         ]);
 
         // Kontrakan harus ditetapkan sebelum route model binding mencari data,

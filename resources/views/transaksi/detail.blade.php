@@ -97,7 +97,7 @@ $rp = fn ($n) => 'Rp ' . number_format((int) $n, 0, ',', '.');
         </div>
     </div>
 
-    @if ($bolehKelola)
+    @if ($bolehKelola && $bisaTulis)
     <div class="form">
         @if ($terkunci)
         <p class="teks-sekunder">Sudah ada pembayaran, sehingga nominal dan penanggung terkunci dan transaksi tidak dapat dihapus.</p>
