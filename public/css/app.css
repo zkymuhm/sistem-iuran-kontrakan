@@ -403,6 +403,9 @@ a.kartu .kartu-judul { color: var(--teks); }
 .isian .unggah-terisi { border-style: solid; border-color: var(--lunas); background: var(--lunas-bg); }
 #unggah-nama { overflow-wrap: anywhere; }
 .isian-salah .unggah-foto { border-color: var(--risiko); }
+/* Pratinjau baru tampil setelah foto dipilih. Tanpa aturan ini, display: block pada .foto-bukti
+   mengalahkan atribut hidden sehingga muncul ikon gambar rusak. */
+.foto-bukti[hidden] { display: none; }
 
 .orang-teks { min-width: 0; }
 
