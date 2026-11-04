@@ -22,7 +22,9 @@
             <input id="cari" type="search" name="cari" value="{{ $cari }}" placeholder="Contoh: galon">
         </div>
         <div class="saring-baris">
-            <div class="isian">
+            {{-- Safari (iPad) dan Samsung Internet tidak menampilkan petunjuk apa pun saat kolom bulan kosong,
+                 sehingga petunjuk "Semua bulan" ditampilkan sendiri dan disembunyikan setelah bulan dipilih. --}}
+            <div class="isian isian-bulan {{ $bulan ? '' : 'kosong' }}" id="isian-bulan">
                 <label for="bulan">Bulan</label>
                 <input id="bulan" type="month" name="bulan" value="{{ $bulan }}">
             </div>
@@ -67,4 +69,19 @@
     @endforelse
     </div>
 </div>
+
+<script>
+(function () {
+    const wadah = document.getElementById('isian-bulan');
+    const masukan = document.getElementById('bulan');
+    if (!wadah || !masukan) return;
+    const perbarui = () => wadah.classList.toggle('kosong', masukan.value === '');
+    masukan.addEventListener('input', perbarui);
+    masukan.addEventListener('change', perbarui);
+    // Saat kolom disentuh, petunjuk disembunyikan agar tidak menumpuk dengan tampilan bawaan peramban
+    masukan.addEventListener('focus', () => wadah.classList.remove('kosong'));
+    masukan.addEventListener('blur', perbarui);
+    perbarui();
+})();
+</script>
 @endsection

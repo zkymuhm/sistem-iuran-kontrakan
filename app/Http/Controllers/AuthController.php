@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Pengguna;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
@@ -24,13 +26,31 @@ class AuthController extends Controller
             'password.required' => 'Password wajib diisi.',
         ]);
 
+        // Pembatasan percobaan masuk: 5 kali gagal untuk email yang sama dari perangkat yang sama,
+        // lalu dikunci 60 detik. Kunci memakai email + IP agar pengguna lain di jaringan yang sama
+        // (misalnya Wi-Fi kampus saat presentasi) tidak ikut terkunci.
+        $kunci = 'masuk:' . Str::lower($kredensial['email']) . '|' . $request->ip();
+
+        if (RateLimiter::tooManyAttempts($kunci, 5)) {
+            $detik = RateLimiter::availableIn($kunci);
+
+            return back()
+                ->withErrors(['email' => "Terlalu banyak percobaan masuk. Coba lagi dalam {$detik} detik."])
+                ->onlyInput('email');
+        }
+
         if (! Auth::attempt($kredensial)) {
+            RateLimiter::hit($kunci, 60);
+
             // Pesan sengaja tidak membedakan email atau password yang salah,
             // agar tidak membocorkan email mana yang terdaftar.
             return back()
                 ->withErrors(['email' => 'Email atau password salah.'])
                 ->onlyInput('email');
         }
+
+        // Berhasil masuk: hitungan percobaan gagal dihapus.
+        RateLimiter::clear($kunci);
 
         // ID sesi diganti setelah masuk untuk mencegah session fixation.
         $request->session()->regenerate();

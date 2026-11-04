@@ -428,3 +428,43 @@ a.kartu .kartu-judul { color: var(--teks); }
   /* BUG-01: di layar sangat sempit dua isian filter disusun bertumpuk */
   .saring-baris { grid-template-columns: minmax(0, 1fr); }
 }
+
+/* Panah pilihan (select): panah bawaan peramban menempel di tepi kanan, sehingga diganti panah sendiri
+   dengan jarak 16 piksel dari tepi, sama dengan jarak teks di sisi kiri. */
+.isian select {
+  -webkit-appearance: none; appearance: none;
+  padding-right: 48px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23141414' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  background-size: 16px 16px;
+}
+.isian select:disabled { opacity: 0.6; }
+.isian select::-ms-expand { display: none; }
+
+/* iPad tegak (768–1023 piksel): setelah dikurangi sidebar, lebar isi hanya sekitar 500 piksel.
+   Tiga kartu ringkasan Rekap sebaris menjadi terhimpit, sehingga disusun ulang:
+   total pengeluaran selebar penuh, dua kartu lainnya berdampingan di bawahnya.
+   Filter tanggal juga disusun bertumpuk agar isian tanggal tidak menyempit. */
+@media screen and (min-width: 768px) and (max-width: 1023px) {
+  .halaman.ada-navigasi { padding-left: calc(220px + 32px); padding-right: 32px; }
+
+  .rekap-angka { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .rekap-angka > :first-child { grid-column: 1 / -1; }
+
+  .halaman.ada-navigasi .rekap > .area-saring { flex-direction: column; align-items: stretch; }
+  .halaman.ada-navigasi .rekap > .area-saring .saring-baris { flex: none; }
+  .rekap > .area-saring .tombol { width: 100%; }
+}
+
+/* Petunjuk kolom bulan yang kosong. Chrome Android menampilkan garis putus-putus, sedangkan Safari dan
+   Samsung Internet tidak menampilkan apa pun. Agar seragam, tampilan bawaan disembunyikan saat kosong
+   dan diganti tulisan "Semua bulan" (filter bulan kosong berarti semua bulan ditampilkan). */
+.isian-bulan { position: relative; }
+.isian-bulan.kosong input::-webkit-datetime-edit { color: transparent; }
+.isian-bulan.kosong input { color: transparent; }
+.isian-bulan.kosong::after {
+  content: 'Semua bulan';
+  position: absolute; left: 17px; bottom: 0; height: 48px; line-height: 48px;
+  color: var(--teks-2); pointer-events: none;
+}

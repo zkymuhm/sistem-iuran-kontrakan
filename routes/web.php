@@ -13,9 +13,11 @@ use Illuminate\Support\Facades\Route;
 // Wilayah 1 — belum masuk
 Route::middleware('guest')->group(function () {
     Route::get('/masuk', [AuthController::class, 'formMasuk'])->name('login');
-    Route::post('/masuk', [AuthController::class, 'masuk']);
+    // Lapis kedua: maksimal 30 kiriman per menit dari satu alamat IP, untuk menahan percobaan massal.
+    // Batasnya longgar karena satu kelas dapat berbagi satu IP yang sama saat presentasi.
+    Route::post('/masuk', [AuthController::class, 'masuk'])->middleware('throttle:30,1');
     Route::get('/daftar', [AuthController::class, 'formDaftar'])->name('daftar');
-    Route::post('/daftar', [AuthController::class, 'daftar']);
+    Route::post('/daftar', [AuthController::class, 'daftar'])->middleware('throttle:30,1');
 });
 
 Route::middleware('auth')->group(function () {
