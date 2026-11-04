@@ -9,6 +9,7 @@ $jalur = [
     'kontrakan' => '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
     'kembali'   => '<path d="m12 19-7-7 7-7"/><path d="M19 12H5"/>',
     'tambah'    => '<path d="M5 12h14"/><path d="M12 5v14"/>',
+    'kamera'    => '<path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/>',
 ];
 @endphp
 <svg xmlns="http://www.w3.org/2000/svg" width="{{ $ukuran }}" height="{{ $ukuran }}" viewBox="0 0 24 24"

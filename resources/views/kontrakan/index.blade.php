@@ -29,15 +29,16 @@
         <div class="kartu">
             <div class="daftar-baris">
                 @forelse ($aktif as $a)
-                <div class="baris">
+                {{-- Di HP tombol Nonaktifkan turun ke baris sendiri di bawah nama, agar nama dan tanggal tidak terhimpit --}}
+                <div class="baris baris-penghuni">
                     <div class="orang">
                         <x-avatar :nama="$a->pengguna->nama" />
-                        <div>
+                        <div class="orang-teks">
                             <div>{{ $a->pengguna->nama }}{{ (int) $a->id_anggota === (int) $anggotaAktif->id_anggota ? ' (Anda)' : '' }}</div>
-                            <div class="teks-sekunder">
-                                @if ((int) $grup->id_pembuat === (int) $a->id_pengguna) Pembuat kontrakan · @endif
-                                Bergabung {{ \Illuminate\Support\Carbon::parse($a->bergabung_pada)->translatedFormat('j F Y') }}
-                            </div>
+                            @if ((int) $grup->id_pembuat === (int) $a->id_pengguna)
+                            <div class="teks-sekunder">Pembuat kontrakan</div>
+                            @endif
+                            <div class="teks-sekunder">Bergabung {{ \Illuminate\Support\Carbon::parse($a->bergabung_pada)->translatedFormat('j M Y') }}</div>
                         </div>
                     </div>
                     {{-- UC-09: hanya pembuat, dan tidak untuk dirinya sendiri --}}

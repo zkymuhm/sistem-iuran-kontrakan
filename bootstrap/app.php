@@ -18,6 +18,10 @@ return Application::configure(basePath: dirname(__DIR__))
             'kontrakan.tulis' => \App\Http\Middleware\PastikanBisaTulis::class,
         ]);
 
+        // Saat diakses melalui tunnel atau hosting, permintaan HTTPS diteruskan ke aplikasi sebagai HTTP.
+        // Header X-Forwarded-* dipercaya agar tautan, CSS, dan formulir tetap memakai https:// dan tidak diblokir peramban.
+        $middleware->trustProxies(at: '*');
+
         // Kontrakan harus ditetapkan sebelum route model binding mencari data,
         // agar global scope NFR-08 sudah aktif saat {transaksi} di-resolve.
         $middleware->prependToPriorityList(

@@ -4,9 +4,13 @@
 $modeUbah = $transaksi !== null;
 $hariIni = now()->toDateString();
 
-$terpilih = old('penanggung', $modeUbah
-? $transaksi->detail->pluck('id_anggota')->all()
-: $penghuni->pluck('id_anggota')->all());
+// BUG-03: setelah validasi gagal, pilihan pengguna dipertahankan apa adanya, termasuk bila semua centang dilepas.
+// Tanpa pemeriksaan ini, old('penanggung') kosong dianggap tidak ada dan semua penghuni kembali tercentang.
+$terpilih = session()->hasOldInput()
+    ? array_map('intval', (array) old('penanggung', []))
+    : ($modeUbah
+        ? $transaksi->detail->pluck('id_anggota')->all()
+        : $penghuni->pluck('id_anggota')->all());
 
 $penalang = (int) old('id_penalang', $modeUbah ? $transaksi->id_penalang : $anggotaAktif->id_anggota);
 @endphp
@@ -82,14 +86,22 @@ $penalang = (int) old('id_penalang', $modeUbah ? $transaksi->id_penalang : $angg
 
     {{-- FR-14: foto bukti opsional; capture membuka kamera belakang di telepon genggam --}}
     <div class="isian @error('foto_bukti') isian-salah @enderror">
-        <label for="foto_bukti">Foto Bukti (opsional)</label>
+        <span class="label-bagian">Foto Bukti (opsional)</span>
         @if ($transaksi?->foto_bukti)
         <img src="{{ route('transaksi.bukti', $transaksi) }}" alt="Foto bukti saat ini" class="foto-bukti foto-kecil">
         <label class="pilihan-sebaris">
             <input type="checkbox" name="hapus_foto" value="1" @checked(old('hapus_foto'))> Hapus foto ini
         </label>
         @endif
-        <input id="foto_bukti" type="file" name="foto_bukti" accept="image/*" capture="environment">
+        {{-- Masukan berkas bawaan peramban kecil dan samar, sehingga diganti area tombol yang jelas dapat ditekan.
+             Input aslinya tetap ada (disembunyikan secara visual) agar tetap dapat dipakai pembaca layar dan keyboard. --}}
+        <input id="foto_bukti" type="file" name="foto_bukti" accept="image/*" capture="environment" class="masukan-tersembunyi">
+        <label for="foto_bukti" class="unggah-foto" id="unggah-foto">
+            <x-ikon nama="kamera" />
+            <span class="kartu-judul" id="unggah-judul">{{ $transaksi?->foto_bukti ? 'Ganti Foto Struk' : 'Tambah Foto Struk' }}</span>
+            <span class="teks-sekunder" id="unggah-nama">Ketuk untuk memotret atau memilih dari galeri</span>
+        </label>
+        <img id="pratinjau-foto" alt="Pratinjau foto yang dipilih" class="foto-bukti foto-kecil" hidden>
         <p class="teks-sekunder">Foto diperkecil otomatis sebelum diunggah. Format JPG, PNG, atau WEBP.</p>
         @error('foto_bukti') <p class="pesan-isian">{{ $message }}</p> @enderror
     </div>
@@ -113,11 +125,28 @@ $penalang = (int) old('id_penalang', $modeUbah ? $transaksi->id_penalang : $angg
 // berkas asli tetap dikirim dan diperiksa batas ukurannya oleh server.
 (function () {
     const masukan = document.getElementById('foto_bukti');
-    if (!masukan || typeof DataTransfer === 'undefined') return;
+    if (!masukan) return;
+
+    // Tanda bahwa foto sudah dipilih: nama berkas dan pratinjau kecil
+    const pratinjau = document.getElementById('pratinjau-foto');
+    masukan.addEventListener('change', function () {
+        const berkas = masukan.files[0];
+        if (!berkas) return;
+        document.getElementById('unggah-judul').textContent = 'Foto dipilih, ketuk untuk mengganti';
+        document.getElementById('unggah-nama').textContent = berkas.name;
+        document.getElementById('unggah-foto').classList.add('unggah-terisi');
+        if (berkas.type.startsWith('image/')) {
+            if (pratinjau.src) URL.revokeObjectURL(pratinjau.src);
+            pratinjau.src = URL.createObjectURL(berkas);
+            pratinjau.hidden = false;
+        }
+    });
+
+    if (typeof DataTransfer === 'undefined') return;
 
     masukan.addEventListener('change', function () {
         const berkas = masukan.files[0];
-        if (!berkas || !berkas.type.startsWith('image/')) return;
+        if (!berkas || !berkas.type.startsWith('image/') || berkas.name === 'bukti.jpg') return;
 
         const gambar = new Image();
         const alamat = URL.createObjectURL(berkas);

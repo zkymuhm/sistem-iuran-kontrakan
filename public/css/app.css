@@ -378,3 +378,50 @@ a.kartu .kartu-judul { color: var(--teks); }
   .area-pembagian { grid-area: pembagian; }
   .area-kelola    { grid-area: kelola; }
 }
+
+/* Modul 9 — perbaikan hasil pengujian */
+
+/* BUG-01: kolom tanggal pada filter keluar dari kartu di HP layar sempit (Redmi 13C).
+   1fr memakai lebar minimum isinya, sedangkan input tanggal bawaan Android punya lebar minimum sendiri,
+   sehingga kolom grid dipaksa ke 0 minimum dan input dibuat mengikuti lebar kolom. */
+.saring-baris { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.saring-baris > .isian { min-width: 0; }
+.isian input[type="date"], .isian input[type="month"] {
+  -webkit-appearance: none; appearance: none;
+  width: 100%; min-width: 0; max-width: 100%; text-align: left;
+}
+
+/* Foto bukti: area tombol yang jelas dapat ditekan, menggantikan input berkas bawaan yang kecil dan samar */
+.masukan-tersembunyi { position: absolute; width: 1px; height: 1px; opacity: 0; overflow: hidden; clip: rect(0 0 0 0); }
+.isian .unggah-foto {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  padding: 20px 16px; border: 2px dashed var(--teks-2); border-radius: 12px;
+  background: var(--permukaan); color: var(--teks); font-size: 14px; text-align: center; cursor: pointer;
+}
+.isian .unggah-foto:hover { background: var(--latar); }
+.masukan-tersembunyi:focus-visible + .unggah-foto { outline: 2px solid var(--teks); outline-offset: 2px; }
+.isian .unggah-terisi { border-style: solid; border-color: var(--lunas); background: var(--lunas-bg); }
+#unggah-nama { overflow-wrap: anywhere; }
+.isian-salah .unggah-foto { border-color: var(--risiko); }
+
+.orang-teks { min-width: 0; }
+
+@media (max-width: 767px) {
+  /* BUG-02: di Samsung Internet lebar layar terbaca lebih besar dari 430 piksel sehingga isi tampil sempit di tengah.
+     Di bawah 768 piksel halaman dan navigasi bawah kini selalu memenuhi lebar layar. */
+  .halaman { max-width: 100%; padding-left: 20px; padding-right: 20px; }
+  .navigasi-bawah { max-width: none; }
+
+  /* Masuk dan Daftar: isian dan tombol tidak berada di dalam kartu, sehingga perlu jarak tepi lebih lebar */
+  .halaman.halaman-auth { padding-left: 24px; padding-right: 24px; }
+
+  /* Penghuni Aktif: tombol Nonaktifkan turun ke bawah nama dan rata kanan agar mudah dijangkau ibu jari */
+  .daftar-baris .baris-penghuni { flex-direction: column; align-items: stretch; gap: 8px; padding: 12px 0; }
+  .baris-penghuni form { align-self: flex-end; }
+  .baris-penghuni .tombol-kecil { height: 36px; }
+}
+
+@media (max-width: 400px) {
+  /* BUG-01: di layar sangat sempit dua isian filter disusun bertumpuk */
+  .saring-baris { grid-template-columns: minmax(0, 1fr); }
+}
