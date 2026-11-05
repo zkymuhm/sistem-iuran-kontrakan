@@ -128,26 +128,56 @@
     const tombol = document.getElementById('tombol-salin');
     if (!tombol) return;
 
-    tombol.addEventListener('click', async function () {
-        const teks = tombol.dataset.pesan;
-        try {
-            // Di telepon genggam, lembar berbagi bawaan dipakai bila tersedia.
-            if (navigator.share) {
-                await navigator.share({ text: teks });
-                return;
-            }
-            await navigator.clipboard.writeText(teks);
-            tombol.textContent = 'Tersalin';
-        } catch (e) {
-            // Clipboard ditolak (misalnya halaman tanpa HTTPS): pilih kodenya agar dapat disalin manual.
-            const pilihan = window.getSelection();
-            const rentang = document.createRange();
-            rentang.selectNodeContents(document.getElementById('kode-invitasi'));
-            pilihan.removeAllRanges();
-            pilihan.addRange(rentang);
-            tombol.textContent = 'Tekan salin untuk menyalin kode';
-        }
+    const tampilkan = (teks) => {
+        tombol.textContent = teks;
         setTimeout(() => { tombol.textContent = 'Salin'; }, 2500);
+    };
+
+    // Cadangan untuk halaman tanpa HTTPS (misalnya diakses lewat alamat IP), tempat navigator.clipboard tidak tersedia.
+    const salinCadangan = (teks) => {
+        const area = document.createElement('textarea');
+        area.value = teks;
+        area.setAttribute('readonly', '');
+        area.style.position = 'fixed';
+        area.style.opacity = '0';
+        document.body.appendChild(area);
+        area.select();
+        let berhasil = false;
+        try { berhasil = document.execCommand('copy'); } catch (e) { berhasil = false; }
+        document.body.removeChild(area);
+        return berhasil;
+    };
+
+    tombol.addEventListener('click', async function () {
+        const kode = tombol.dataset.kode;
+
+        // Di HP (layar sentuh) dibuka lembar berbagi agar kode langsung dapat dikirim lewat WhatsApp dan sejenisnya.
+        // Di laptop kode langsung disalin ke clipboard.
+        if (navigator.share && window.matchMedia('(pointer: coarse)').matches) {
+            try {
+                await navigator.share({ text: tombol.dataset.pesan });
+                return;
+            } catch (e) {
+                if (e.name === 'AbortError') return; // pengguna menutup lembar berbagi
+            }
+        }
+
+        try {
+            if (navigator.clipboard && window.isSecureContext) {
+                await navigator.clipboard.writeText(kode);
+                return tampilkan('Kode tersalin');
+            }
+        } catch (e) { /* lanjut ke cara cadangan */ }
+
+        if (salinCadangan(kode)) return tampilkan('Kode tersalin');
+
+        // Semua cara gagal: kode dipilih agar dapat disalin manual.
+        const pilihan = window.getSelection();
+        const rentang = document.createRange();
+        rentang.selectNodeContents(document.getElementById('kode-invitasi'));
+        pilihan.removeAllRanges();
+        pilihan.addRange(rentang);
+        tampilkan('Tekan Ctrl/⌘+C untuk menyalin');
     });
 })();
 </script>

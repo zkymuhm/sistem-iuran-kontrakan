@@ -6,6 +6,7 @@ use App\Models\Anggota;
 use App\Models\Transaksi;
 use App\Services\PembagianService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
@@ -40,7 +41,20 @@ class TransaksiController extends Controller
             ->orderByDesc('id_transaksi')
             ->get();
 
+        // Kolom bulan bawaan peramban tidak didukung Safari desktop dan Firefox (berubah menjadi kolom teks biasa),
+        // sehingga filter bulan memakai daftar pilihan berisi bulan-bulan yang memiliki transaksi.
+        $pilihanBulan = Transaksi::query()
+            ->selectRaw("DATE_FORMAT(tanggal, '%Y-%m') AS bln")
+            ->distinct()
+            ->orderByDesc('bln')
+            ->pluck('bln');
+        if ($bulan !== '' && ! $pilihanBulan->contains($bulan)) {
+            $pilihanBulan->prepend($bulan);
+        }
+        $pilihanBulan = $pilihanBulan->mapWithKeys(fn ($b) => [$b => Carbon::parse($b . '-01')->translatedFormat('F Y')]);
+
         return view('transaksi.index', [
+            'pilihanBulan' => $pilihanBulan,
             'daftar'    => $daftar,
             'cari'      => $cari,
             'bulan'     => $bulan,

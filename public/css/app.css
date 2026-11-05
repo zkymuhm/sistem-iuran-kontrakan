@@ -457,14 +457,6 @@ a.kartu .kartu-judul { color: var(--teks); }
   .rekap > .area-saring .tombol { width: 100%; }
 }
 
-/* Petunjuk kolom bulan yang kosong. Chrome Android menampilkan garis putus-putus, sedangkan Safari dan
-   Samsung Internet tidak menampilkan apa pun. Agar seragam, tampilan bawaan disembunyikan saat kosong
-   dan diganti tulisan "Semua bulan" (filter bulan kosong berarti semua bulan ditampilkan). */
-.isian-bulan { position: relative; }
-.isian-bulan.kosong input::-webkit-datetime-edit { color: transparent; }
-.isian-bulan.kosong input { color: transparent; }
-.isian-bulan.kosong::after {
-  content: 'Semua bulan';
-  position: absolute; left: 17px; bottom: 0; height: 48px; line-height: 48px;
-  color: var(--teks-2); pointer-events: none;
-}
+
+/* Kotak centang "Hapus foto ini" tidak ikut gaya isian teks (tinggi 48 piksel dan padding) */
+.isian .pilihan-sebaris input { width: 20px; height: 20px; padding: 0; accent-color: var(--utama); }

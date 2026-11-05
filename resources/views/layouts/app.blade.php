@@ -75,7 +75,7 @@
             <h2 class="kartu-judul" id="dialog-judul"></h2>
             <p class="teks-sekunder" id="dialog-pesan"></p>
             <div class="baris-tombol">
-                <button type="submit" value="batal" class="tombol tombol-sekunder" autofocus>Batal</button>
+                <button type="submit" value="batal" class="tombol tombol-sekunder" id="dialog-batal">Batal</button>
                 <button type="submit" value="ya" class="tombol tombol-utama" id="dialog-ya"></button>
             </div>
         </form>
@@ -104,6 +104,9 @@
             ya.className = 'tombol ' + ('risiko' in form.dataset ? 'tombol-risiko' : 'tombol-utama');
             dialog.returnValue = '';
             dialog.showModal();
+            // Tombol Enter menekan tombol yang sedang terfokus. Untuk tindakan berisiko (hapus, nonaktifkan,
+            // keluar, bubarkan) fokus tetap pada Batal agar tidak terjadi tanpa sengaja; selain itu fokus pada tombol konfirmasi.
+            ('risiko' in form.dataset ? document.getElementById('dialog-batal') : ya).focus();
         });
 
         dialog.addEventListener('close', function () {

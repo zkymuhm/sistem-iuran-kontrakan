@@ -88,7 +88,7 @@ $penalang = (int) old('id_penalang', $modeUbah ? $transaksi->id_penalang : $angg
     <div class="isian @error('foto_bukti') isian-salah @enderror">
         <span class="label-bagian">Foto Bukti (opsional)</span>
         @if ($transaksi?->foto_bukti)
-        <img src="{{ route('transaksi.bukti', $transaksi) }}" alt="Foto bukti saat ini" class="foto-bukti foto-kecil">
+        <img src="{{ route('transaksi.bukti', ['transaksi' => $transaksi, 'v' => substr(md5($transaksi->foto_bukti), 0, 8)]) }}" alt="Foto bukti saat ini" class="foto-bukti foto-kecil">
         <label class="pilihan-sebaris">
             <input type="checkbox" name="hapus_foto" value="1" @checked(old('hapus_foto'))> Hapus foto ini
         </label>
