@@ -23,8 +23,13 @@
     {{-- 'navigasi'       : halaman utama, navigasi tampil di HP (bawah) dan di laptop (sidebar).
          'navigasi-lebar' : halaman turunan, sidebar hanya di laptop; di HP tetap tanpa navigasi sesuai rancangan Modul 6. --}}
     <main class="halaman @yield('kelas-halaman') @hasSection('navigasi') ada-navigasi @endif @hasSection('navigasi-lebar') ada-navigasi nav-lebar-saja @endif">
+        {{-- Pesan berhasil tampil mengambang di atas isi halaman, lalu hilang sendiri, sehingga tidak mendorong isi ke bawah.
+             Pesan gagal tetap menyatu dengan halaman agar tidak terlewat. --}}
         @if (session('berhasil'))
-        <div class="pesan pesan-berhasil">{{ session('berhasil') }}</div>
+        <div class="pesan pesan-berhasil toast" id="toast" role="status" aria-live="polite">
+            <span>{{ session('berhasil') }}</span>
+            <button type="button" class="toast-tutup" aria-label="Tutup pesan">×</button>
+        </div>
         @endif
 
         {{-- BR-14, BR-16: mode baca untuk penghuni nonaktif dan kontrakan arsip --}}
@@ -80,6 +85,24 @@
             </div>
         </form>
     </dialog>
+
+    <script>
+    (function () {
+        const toast = document.getElementById('toast');
+        if (!toast) return;
+        const tutup = () => {
+            toast.classList.add('toast-hilang');
+            setTimeout(() => toast.remove(), 300);
+        };
+        // Pesan panjang (misalnya rincian pembagian) diberi waktu baca lebih lama.
+        const waktu = Math.min(9000, 3500 + toast.textContent.trim().length * 40);
+        let pewaktu = setTimeout(tutup, waktu);
+        toast.querySelector('.toast-tutup').addEventListener('click', tutup);
+        // Selama disentuh atau diarahkan kursor, pesan tidak hilang.
+        toast.addEventListener('mouseenter', () => clearTimeout(pewaktu));
+        toast.addEventListener('mouseleave', () => { pewaktu = setTimeout(tutup, 2000); });
+    })();
+    </script>
 
     <script>
     (function () {

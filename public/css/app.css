@@ -460,3 +460,41 @@ a.kartu .kartu-judul { color: var(--teks); }
 
 /* Kotak centang "Hapus foto ini" tidak ikut gaya isian teks (tinggi 48 piksel dan padding) */
 .isian .pilihan-sebaris input { width: 20px; height: 20px; padding: 0; accent-color: var(--utama); }
+
+/* Pesan berhasil mengambang (toast): tidak menambah panjang halaman dan hilang sendiri */
+.toast {
+  position: fixed; z-index: 50;
+  top: calc(12px + env(safe-area-inset-top)); left: 50%; transform: translateX(-50%);
+  width: calc(100% - 32px); max-width: 398px; margin: 0;
+  display: flex; align-items: flex-start; gap: 8px;
+  border: 1px solid #BFE6CC; box-shadow: 0 8px 24px rgba(20, 20, 20, 0.12);
+  transition: opacity 0.3s, transform 0.3s;
+}
+.toast > span { flex: 1; }
+.toast-hilang { opacity: 0; transform: translate(-50%, -8px); }
+.toast-tutup {
+  flex-shrink: 0; width: 28px; height: 28px; margin: -4px -8px -4px 0;
+  border: none; background: none; color: inherit; font-size: 20px; line-height: 1; cursor: pointer;
+}
+@media (min-width: 768px) {
+  /* Di layar lebar, pesan berada di tengah area isi (di kanan sidebar) */
+  .halaman.ada-navigasi .toast { left: calc(50% + 110px); }
+}
+
+/* Beranda: salam tetap terlihat di atas saat digulir, tanpa bar atau garis.
+   Latar disamakan dengan latar halaman agar isi yang lewat di bawahnya tidak bertumpuk dengan teks. */
+.beranda .area-salam {
+  position: sticky; top: 0; z-index: 10;
+  margin: -12px 0 -12px; padding: calc(12px + env(safe-area-inset-top)) 0 12px;
+  background: var(--latar);
+}
+
+/* Ukuran teks tombol: diberi jarak dalam agar teks tidak memenuhi tombol */
+.tombol { font-size: 15px; padding: 0 16px; line-height: 1.2; text-align: center; gap: 8px; }
+.baris-tombol .tombol, .dialog .tombol, .baris-pembagian .tombol { font-size: 14px; }
+.tombol-kecil { font-size: 13px; padding: 0 14px; }
+/* Dialog di HP sempit: dua tombol disusun bertumpuk (tombol konfirmasi di atas) agar teksnya tidak terlipat dua baris */
+@media (max-width: 400px) {
+  .dialog .baris-tombol { flex-direction: column-reverse; }
+  .dialog .baris-tombol > * { flex: none; }
+}
