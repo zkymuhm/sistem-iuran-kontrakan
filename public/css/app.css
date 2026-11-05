@@ -498,3 +498,9 @@ a.kartu .kartu-judul { color: var(--teks); }
   .dialog .baris-tombol { flex-direction: column-reverse; }
   .dialog .baris-tombol > * { flex: none; }
 }
+
+/* Di layar lebar Beranda berbentuk grid empat kolom: salam hanya menempati tiga kolom, sehingga bila dibuat tetap di atas,
+   kartu di kolom keempat terlihat lewat di sampingnya. Karena itu salam tetap di atas hanya berlaku di bawah 1024 piksel. */
+@media (min-width: 1024px) {
+  .beranda .area-salam { position: static; margin: 0; padding: 0; background: none; }
+}
