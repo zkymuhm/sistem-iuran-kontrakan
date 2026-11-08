@@ -14,7 +14,9 @@
             <span class="galat-kode">{{ $kode }}</span>
             <h1 class="judul-halaman">{{ $judul }}</h1>
             <p class="teks-sekunder">{{ $pesan }}</p>
+            @if ($tombol ?? true)
             <a href="{{ url('/') }}" class="tombol tombol-utama">Kembali ke Beranda</a>
+            @endif
         </div>
     </main>
 </body>

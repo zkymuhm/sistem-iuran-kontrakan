@@ -18,6 +18,11 @@ return Application::configure(basePath: dirname(__DIR__))
             'kontrakan.tulis' => \App\Http\Middleware\PastikanBisaTulis::class,
         ]);
 
+        // Link berkunci (lihat config/akses.php). Dipasang di grup web agar cookie sudah terbaca saat diperiksa.
+        $middleware->web(append: [
+            \App\Http\Middleware\PastikanAksesKunci::class,
+        ]);
+
         // Saat diakses melalui tunnel atau hosting, permintaan HTTPS diteruskan ke aplikasi sebagai HTTP.
         // Header X-Forwarded-* dipercaya agar tautan, CSS, dan formulir tetap memakai https:// dan tidak diblokir peramban.
         $middleware->trustProxies(at: '*');
