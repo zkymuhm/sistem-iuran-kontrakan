@@ -33,6 +33,13 @@ return Application::configure(basePath: dirname(__DIR__))
             before: \Illuminate\Routing\Middleware\SubstituteBindings::class,
             prepend: \App\Http\Middleware\PastikanKontrakanAktif::class,
         );
+
+        // Link berkunci diperiksa sebelum autentikasi, agar ?kunci= tidak hilang
+        // saat pengunjung yang belum masuk dialihkan ke halaman Masuk.
+        $middleware->prependToPriorityList(
+            before: \Illuminate\Contracts\Auth\Middleware\AuthenticatesRequests::class,
+            prepend: \App\Http\Middleware\PastikanAksesKunci::class,
+        );
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(
