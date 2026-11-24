@@ -7,6 +7,7 @@
 @section('isi')
 <div class="auth">
     <div class="auth-intro">
+        <img src="{{ asset('ikon/logo-64.png') }}" alt="" class="logo-aplikasi" width="56" height="56">
         <h1 class="judul-aplikasi">Daftar Akun</h1>
         <p class="teks-sekunder">Akun dipakai untuk mengenali Anda pada setiap kontrakan</p>
         <ul class="auth-poin hanya-lebar-blok">

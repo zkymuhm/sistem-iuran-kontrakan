@@ -13,7 +13,9 @@
     {{-- PWA: dapat dipasang ke layar utama dan terbuka tanpa kolom alamat. Service worker tidak dipasang karena akses offline di luar ruang lingkup. --}}
     <link rel="manifest" href="{{ asset('manifest.webmanifest') }}">
     <meta name="theme-color" content="#FAFAFA">
-    <link rel="icon" href="{{ asset('ikon/ikon-192.png') }}" type="image/png">
+    {{-- Logo: atap kontrakan di atas empat bagian iuran yang sama besar; satu bagian hijau menandakan sudah lunas. --}}
+    <link rel="icon" href="{{ asset('favicon.ico') }}" sizes="any">
+    <link rel="icon" href="{{ asset('ikon/favicon-32.png') }}" type="image/png" sizes="32x32">
     <link rel="apple-touch-icon" href="{{ asset('ikon/apple-touch-icon.png') }}">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-title" content="Iuran Kontrakan">

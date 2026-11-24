@@ -504,3 +504,24 @@ a.kartu .kartu-judul { color: var(--teks); }
 @media (min-width: 1024px) {
   .beranda .area-salam { position: static; margin: 0; padding: 0; background: none; }
 }
+
+
+/* Logo aplikasi di halaman Masuk dan Daftar */
+.logo-aplikasi { display: block; width: 56px; height: 56px; margin-bottom: 16px; }
+@media (min-width: 768px) {
+  .auth-intro .logo-aplikasi { margin-bottom: 0; }
+}
+
+/* Header HP seragam: judul halaman (dan tombol kembali) tetap di atas saat isi digulir.
+   Berlaku untuk header x-kepala dan salam Beranda, sehingga semua halaman berperilaku sama.
+   Latar membentang sampai tepi layar agar isi yang lewat di bawahnya tidak terlihat di sisi kiri-kanan. */
+@media (max-width: 767px) {
+  .kepala, .beranda .area-salam {
+    position: sticky; top: 0; z-index: 10;
+    margin: -12px -20px 0;
+    padding: calc(12px + env(safe-area-inset-top)) 20px 12px;
+    background: var(--latar);
+  }
+  .kepala { margin-bottom: 20px; }
+  .beranda .area-salam { margin-bottom: -12px; }
+}
